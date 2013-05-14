@@ -30,14 +30,14 @@ def category(obj):
     category.allow_tags = True
     if not obj.category:
         return ''
-    return '&nbsp;,&nbsp;'.join([c.name for c in obj.category_set.all()])
+    return '&nbsp;,&nbsp;'.join([c.name for c in obj.category.all()])
 
 
 def tag(obj):
     tag.allow_tags = True
     if not obj.tag:
         return ''
-    return '&nbsp;,&nbsp;'.join([t.name for t in obj.tag_set.all()])
+    return '&nbsp;,&nbsp;'.join([t.name for t in obj.tag.all()])
 
 
 cover.short_description = cn_key._cover
@@ -69,6 +69,7 @@ class TagInline(admin.TabularInline):
 class ProductAdmin(admin.ModelAdmin):
     list_display = (
         'title', cover, 'content', category, tag, 'vote_up', 'vote_down', 'share', 'update_time', 'created_time')
+    list_filter = ('category', 'tag', )
     readonly_fields = ('vote_up', 'vote_down', 'share')
     ordering = ('-update_time', '-created_time', )
     form = ProductForm
