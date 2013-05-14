@@ -74,6 +74,7 @@ class ProductAdmin(admin.ModelAdmin):
     form = ProductForm
     inlines = [CategoryInline, TagInline]
     exclude = ('category', 'tag', )
+    search_fields = ('title', 'content', )
 
 
     def save_model(self, request, obj, form, change):
