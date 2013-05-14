@@ -2,6 +2,7 @@ from django.conf.urls import patterns, include, url
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
+import settings
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -14,5 +15,6 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^/?', 'haochid.views.index', name='index'),
+    url(r'^/?$', 'haochid.views.index', name='index'),
+    (r'^static/(?P<path>.*)$', 'serve', {'document_root': settings.STATIC_ROOT}),
 )
