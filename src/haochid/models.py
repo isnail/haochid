@@ -41,8 +41,7 @@ class Product(models.Model):
     title = models.CharField(cn_key._title, max_length=255)
     category = models.ManyToManyField(Category, null=True, blank=True, verbose_name=cn_key._category)
     tag = models.ManyToManyField(Tag, null=True, blank=True, verbose_name=cn_key._tag)
-    cover = models.ImageField(cn_key._cover, null=True, blank=True,
-                              upload_to='images/%s/%s/%s/' % (now.year, now.month, now.day))
+    cover = models.CharField(cn_key._cover, max_length=800, null=True, blank=True)
     content = models.TextField(cn_key._content)
     vote_up = models.SmallIntegerField(cn_key._vote_up, default=0)
     vote_down = models.SmallIntegerField(cn_key._vote_down, default=0)

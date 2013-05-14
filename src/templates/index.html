@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block body_wrap %}
+    <div class="page">
+        <div class="page-region">
+            <div class="page-region-content">
+
+                <div class="grid">
+                    <div class="row">
+                        <div class="span4 bg-color-red">
+                            <img src="{% static 'images/simple.png' %}" class="place-right" style="margin: 10px;"/>
+                            <h2 class="fg-color-white">&nbsp;Hot</h2>
+                        </div>
+
+                        <div class="span4 bg-color-green">
+                            <img src="{% static 'images/grid.png' %}" class="place-right" style="margin: 10px;"/>
+                            <h2 class="fg-color-white">&nbsp;New</h2>
+                        </div>
+
+                        <div class="span4 bg-color-pink">
+                            <img src="{% static 'images/responsive.png' %}" class="place-right" style="margin: 10px;"/>
+                            <h2 class="fg-color-white">&nbsp;Recommend</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid">
+                    <div class="row">
+                        <h2>Hot</h2>
+                        <div class="span4">
+                            <div class="image-container bg-color-red" style="width: 100%">
+                                <div style="height: 200px; overflow: hidden"><img src="{% static 'images/spface.jpg' %}" /></div>
+                                <div class="overlay">
+                                    <div class="padding5 fg-color-white tertiary-text">
+                                        <b><a href="#">Title</a></b>
+                                        <br>
+                                        <span>sdsdkjsdf</span>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="span4">
+                            <div class="image-container bg-color-green" style="width: 100%">
+                                <div style="height: 200px; overflow: hidden"><img src="{% static 'images/spface.jpg' %}" /></div>
+                                <div class="overlay">
+                                    <div class="padding10 fg-color-white tertiary-text">Sergey Volkov - Voljskiy, Russia. Team member. Javascript lead.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="span4">
+                            <div class="image-container bg-color-pink" style="width: 100%">
+                                <div style="height: 200px; overflow: hidden"><img src="{% static 'images/spface.jpg' %}" /></div>
+                                <div class="overlay">
+                                    <div class="padding10 fg-color-white tertiary-text">Valerio Battaglia - Ticino, Switzerland. Team member. CSS/LESS, HTML, Javascript.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <h2>New</h2>
+                        <div class="span4">
+                            <div class="image-container bg-color-red" style="width: 100%">
+                                <div style="height: 200px; overflow: hidden"><img src="{% static 'images/spface.jpg' %}" /></div>
+                                <div class="overlay">
+                                    <div class="padding5 fg-color-white tertiary-text">
+                                        <b><a href="#">Title</a></b>
+                                        <br>
+                                        <span>sdsdkjsdf</span>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="span4">
+                            <div class="image-container bg-color-green" style="width: 100%">
+                                <div style="height: 200px; overflow: hidden"><img src="{% static 'images/spface.jpg' %}" /></div>
+                                <div class="overlay">
+                                    <div class="padding10 fg-color-white tertiary-text">Sergey Volkov - Voljskiy, Russia. Team member. Javascript lead.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="span4">
+                            <div class="image-container bg-color-pink" style="width: 100%">
+                                <div style="height: 200px; overflow: hidden"><img src="{% static 'images/spface.jpg' %}" /></div>
+                                <div class="overlay">
+                                    <div class="padding10 fg-color-white tertiary-text">Valerio Battaglia - Ticino, Switzerland. Team member. CSS/LESS, HTML, Javascript.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
