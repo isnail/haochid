@@ -4,7 +4,6 @@ from django import forms
 
 from haochid.models import *
 from utils import save_to_oss
-from oss.oss_api import OssAPI
 
 
 class CategoryAdmin(admin.ModelAdmin):
@@ -23,7 +22,7 @@ def cover(obj):
     cover.allow_tags = True
     if not obj.cover:
         return '<span style="color:red;">No Cover</span>'
-    return '<img src="%s" width=100px />' % obj.cover
+    return '<a href="%s" target="_blank"><img src="%s" width=100px /></a>' % (obj.cover, obj.cover)
 
 
 def category(obj):
@@ -46,7 +45,6 @@ tag.short_description = cn_key._tag
 
 
 class ProductForm(forms.ModelForm):
-
     class Meta:
         model = Product
         widgets = {
@@ -68,7 +66,8 @@ class TagInline(admin.TabularInline):
 
 class ProductAdmin(admin.ModelAdmin):
     list_display = (
-        'title', cover, 'content', category, tag, 'vote_up', 'vote_down', 'share', 'update_time', 'created_time')
+        'title', cover, 'content', category, tag, 'status', 'vote_up', 'vote_down', 'share', 'update_time',
+        'created_time')
     list_filter = ('category', 'tag', )
     readonly_fields = ('vote_up', 'vote_down', 'share')
     ordering = ('-update_time', '-created_time', )
@@ -82,8 +81,7 @@ class ProductAdmin(admin.ModelAdmin):
         if cover:
             cover = request.FILES.get('cover')
             path = 'images/products/%s/%s' % (obj.pk, cover.name)
-            save_to_oss(path, cover.read())
-            obj.cover = 'http://haochid.oss.aliyuncs.com/%s' % path
+            obj.cover = save_to_oss(path, cover.read(), cover.content_type)
             obj.save()
 
 

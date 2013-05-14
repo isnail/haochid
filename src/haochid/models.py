@@ -31,8 +31,9 @@ class Tag(models.Model):
 
 
 product_status_choices = (
-    ('A', 'OK'),
-    ('I', 'Closed')
+    ('A', cn_key._ok),
+    ('I', cn_key._close),
+    ('W', cn_key._waiting)
 )
 
 

@@ -31,8 +31,8 @@ oss_host = 'oss.aliyuncs.com'
 bucket = 'haochid'
 
 
-def save_to_oss(object, content):
+def save_to_oss(object, content, content_type):
     oss = OssAPI(oss_host, access_id, secret_access_key)
     oss.get_connection()
-    oss.put_object_from_string(bucket, object, content)
+    oss.put_object_from_string(bucket, object, content, content_type)
     return 'http://%s/%s/%s' % (oss_host, bucket, object)
