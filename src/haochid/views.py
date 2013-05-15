@@ -1,5 +1,5 @@
 __author__ = 'biyanbing'
-import datetime
+import datetime, urllib2, json
 
 from django.shortcuts import render_to_response
 
@@ -10,6 +10,17 @@ import models
 def index(req):
     # todo set cookies
     ctx = {}
+    if req.META.has_key('HTTP_X_FORWARDED_FOR'):
+        ip =  req.META['HTTP_X_FORWARDED_FOR']
+    else:
+        ip = req.META.get('REMOTE_ADDR', '')
+    print ip
+    ip = '202.198.16.3'
+    baidu_map_url = 'http://api.map.baidu.com/location/ip?ak=D406fa7556e0d44df4f21ecacc2ef843&ip=%s' % ip
+    rs = urllib2.urlopen(baidu_map_url)
+    rs_data = json.loads(rs.read())
+    print rs_data
+    ctx.update(rs_data)
     return render_to_response('index.html', ctx)
 
 
