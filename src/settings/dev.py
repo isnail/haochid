@@ -10,8 +10,12 @@ DATABASES = {
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
     }
 }
+access_id = 'NtKMKCiLAiK8OlpV'
+secret_access_key = 'Y6DEQhEhzgRzOJES5HdQZUFFj0rRsM'
+oss_host = 'oss.aliyuncs.com'
+bucket = 'haochid'
 
-MEDIA_URL = '/media/'
+MEDIA_URL = 'http://%s/%s/' % (oss_host, bucket, )
 STATIC_ROOT = '%s' % rel_path('../static')
 
 DATE_FORMAT = 'Y-m-d'

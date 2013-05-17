@@ -15,6 +15,9 @@ class Plat(models.Model):
     app_key = models.CharField(cn_key._app_key, max_length=255, null=True, blank=True)
     app_secret = models.CharField(cn_key._app_secret, max_length=255, null=True, blank=True)
 
+    def __unicode__(self):
+        return self.get_name_display()
+
     class Meta:
         verbose_name = cn_key._plat
         verbose_name_plural = cn_key._plat

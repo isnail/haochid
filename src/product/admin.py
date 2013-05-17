@@ -3,6 +3,7 @@ import logging
 
 from django.contrib import admin
 from django import forms
+from django.contrib.admin import SimpleListFilter
 
 from models import *
 from utils import save_to_oss
@@ -24,7 +25,7 @@ def cover(obj):
     cover.allow_tags = True
     if not obj.cover:
         return '<span style="color:red;">No Cover</span>'
-    return '<a href="%s" target="_blank"><img src="%s" width=100px /></a>' % (obj.cover, obj.cover)
+    return '<a href="%s" target="_blank"><img src="%s" width=100px /></a>' % (obj.cover.url, obj.cover.url)
 
 
 def category(obj):
@@ -47,20 +48,22 @@ def is_recommend(obj):
     if DailyRecommended.objects.filter(product=obj):
         return True
     return False
+#
+# class AuthorFilter(SimpleListFilter):
+#     title = cn_key._author
+#     parameter_name = 'author'
+#
+#     def lookups(self, request, model_admin):
+#         return [[q.pk, q.uid] for q in User.objects.filter(is_staff=True)]
+#
+#     def queryset(self, request, queryset):
+#         return queryset.filter(author=self.value())
 
 
 cover.short_description = cn_key._cover
 category.short_description = cn_key._category
 tag.short_description = cn_key._tag
 is_recommend.short_description = cn_key._recommend
-
-
-class ProductForm(forms.ModelForm):
-    class Meta:
-        model = Product
-        widgets = {
-            'cover': forms.FileInput()
-        }
 
 
 class CategoryInline(admin.TabularInline):
@@ -98,13 +101,12 @@ del_recommend.short_description = '%s %s' % (cn_key._del, cn_key._recommend)
 
 class ProductAdmin(admin.ModelAdmin):
     list_display = (
-        'title', cover, 'content', category, tag, 'status', is_recommend, 'vote_up', 'vote_down', 'share',
+        'title', cover, 'author', 'content', category, tag, 'status', is_recommend, 'vote_up', 'vote_down', 'share',
         'update_time',
         'created_time')
     list_filter = ('category', 'tag', )
     readonly_fields = ('vote_up', 'vote_down', 'share')
     ordering = ('-update_time', '-created_time', )
-    form = ProductForm
     inlines = [CategoryInline, TagInline]
     exclude = ('category', 'tag', )
     search_fields = ('title', 'content', )
@@ -112,19 +114,19 @@ class ProductAdmin(admin.ModelAdmin):
 
 
     def save_model(self, request, obj, form, change):
-        cover = form.cleaned_data.get('cover')
+        cover = request.FILES.get('cover')
         if cover:
-            cover = request.FILES.get('cover')
             path = 'images/products/%s/%s' % (obj.pk, cover.name)
             obj.cover = save_to_oss(path, cover.read(), cover.content_type)
+        if not change:
             obj.author = request.user
-            obj.save()
+        obj.save()
 
 
 class DailyRecommendedForm(forms.ModelForm):
     class Meta:
         model = DailyRecommended
-        widgets ={
+        widgets = {
             'reason': forms.Textarea()
         }
 

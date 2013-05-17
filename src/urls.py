@@ -8,7 +8,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'haochid.views.home', name='home'),
-    # url(r'^haochid/', include('haochid.foo.urls')),
+    # url(r'^/', include(user.urls)),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
@@ -18,5 +18,7 @@ urlpatterns = patterns('',
     url(r'^/?$', 'product.views.index', name='index'),
     url(r'^static/(?P<path>.*)$', 'serve', {'document_root': settings.STATIC_ROOT}),
 
-    url(r'^login/?', 'django.contrib.auth.views.login'),
+    url(r'^login/?', 'django.contrib.auth.views.login', name='login'),
+    url(r'^register/?', 'user.views.register', name='register'),
+
 )

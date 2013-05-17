@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.models import BaseUserManager
 from django.utils import timezone
+from django.core.mail import send_mail
 
 import cn_key
 
@@ -64,6 +65,15 @@ class User(AbstractBaseUser, PermissionsMixin, UserPlat):
 
     def get_short_name(self):
         return self.nick_name if self.nick_name else ''
+
+    def get_full_name(self):
+        return self.uid
+
+    def email_user(self, subject, message, from_email=None):
+        """
+        Sends an email to this User.
+        """
+        send_mail(subject, message, from_email, [self.email])
 
     class Meta:
         verbose_name = cn_key._user

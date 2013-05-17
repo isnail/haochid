@@ -22,6 +22,9 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = 'user.User'
+LOGIN_REDIRECT_URL = '/'
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
@@ -97,6 +100,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.transaction.TransactionMiddleware',
     'core.middleware.UserAuthMiddleware',
 )
 
@@ -105,7 +109,6 @@ ROOT_URLCONF = 'urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'wsgi.application'
 
-import os
 TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), '../', 'templates').replace('\\','/'),)
 
 INSTALLED_APPS = (

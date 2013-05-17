@@ -35,6 +35,13 @@ _location = u'位置'
 _app_key = u'App Key'
 _app_secret = u'App Secret'
 _user = u'用户'
+_info = u'信息'
+_nick_name = u'昵称'
+_is_staff = u'管理员状态'
+_is_active = u'有效'
+_account = u'帐号'
+_password = u'密码'
+_password_repeat = u'重复密码'
 
 """
 status
@@ -51,6 +58,7 @@ _del = u'删除'
 _login = u'登录'
 _logout = u'退出'
 _register = u'注册'
+_manage = u'管理'
 
 """
 app lables
@@ -58,3 +66,9 @@ app lables
 _haochid = u'好吃的'
 _statistic = u'统计'
 _plat = u'平台'
+
+"""
+validation
+"""
+_password_not_match = u'密码不一致。'
+_email_exists = u'邮箱已存在。'
