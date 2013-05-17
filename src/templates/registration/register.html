@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>register</title>
+</head>
+<body>
+<form action="" method="post">{{ user.email }}
+    {{ form.email.label }}: {{ form.email }}{{ form.email.errors }}
+    {{ form.password.label }}: {{ form.password }}{{ form.password.errors }}
+    {{ form.password_repeat.label }}: {{ form.password_repeat }}{{ form.password_repeat.errors }}
+    <input type="submit">
+</form>
+</body>
+</html>
