@@ -32,31 +32,3 @@ pip-log.txt
 .mr.developer.cfg
 
 
-# steve
-settings/__init__.py
-
-# Common IDEs
-.idea/
-*.swp
-*.elc
-*.orig
-*.rej
-*~
-*.bak
-*.prof
-
-# liubo
-.emacs*
-*.el
-.ropeproject/
-fabfile.py
-fabvars.py
-debug.py
-s3on.py
-.#*
-
-# Project
-venv/
-run/
-data/
-src/meme/settings/__init__.py
