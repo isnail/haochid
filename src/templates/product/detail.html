@@ -13,7 +13,12 @@
             <div class="grid">
                 <div class="row detail-body">
                     <div class="span8">
-                        <img src="{{ product.cover.url }}" alt="{{ product.title }}"/>
+                        <div class="padding5 bg-color-lighten">
+                            <img src="{{ product.cover.url }}" alt="{{ product.title }}"/>
+                        </div>
+                        <div class="padding5 bg-color-green" style="margin-top: 10px;">
+
+                        </div>
                     </div>
                     <div class="span4">
                         <p>
@@ -27,16 +32,12 @@
                         <button class="image-button bg-color-pink fg-color-white">踩(459)<i class="icon-thumbs-down"></i></button>
                         <p class="bg-color-red fg-color-white padding5">扫描二维码，发送给朋友</p>
                         <img src="{% url 'product.views.qr' %}?url={% url 'product.views.product' product.id %}">
-                    </div>
-                </div>
-                <div class="row">
+                        <div class="padding5 bg-color-pink fg-color-white">
+                            <div class="padding5">这里去吃↓</div>
+                            <div id="map" style="height: 300px;">
 
-                </div>
-            </div>
-            <div class="grid">
-                <div class="span12 padding5 bg-color-red">
-                    <div id="map" style="height: 300px;">
-
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
