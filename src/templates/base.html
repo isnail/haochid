@@ -30,41 +30,32 @@
     <div class="nav-bar">
         <div class="nav-bar-inner padding10">
             <span class="pull-menu"></span>
-            <a href="/"><span class="element brand">
-                        <img class="place-left" src="images/logo32.png" style="height: 20px"/>
-                        Metro UI CSS <small><?= include("version.phtml")?></small>
-                    </span></a>
+            <a href="/">
+                <span class="element brand">
+                    <img class="place-left" src="images/logo32.png" style="height: 20px"/>
+                    好吃的
+                </span>
+            </a>
             <div class="divider"></div>
             <ul class="menu">
-                <li><a href="/">Home</a></li>
-                <li data-role="dropdown">
-                    <a href="#">Scaffolding</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="global.php">Global styles</a></li>
-                        <li><a href="layout.php">Layouts and templates</a></li>
-                        <li><a href="grid.php">Grid system</a></li>
-                        <li class="divider"></li>
-                        <li><a href="responsive.php">Responsive design</a>
-                        </li>
-                    </ul>
-                </li>
-                <li data-role="dropdown"><a href="#">Base CSS</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="typography.php">Typography</a></li>
-                        <li><a href="tables.php">Tables</a></li>
-                        <li><a href="forms.php">Forms</a></li>
-                        <li><a href="buttons.php">Buttons</a></li>
-                        <li><a href="images.php">Images</a></li>
-                        <li class="divider"></li>
-                        <li><a href="icons.php">Icons</a></li>
-                    </ul>
-                </li>
-                <li><a href="https://github.com/olton/Metro-UI-CSS">Source</a></li>
+                <li><a href="/">首页</a></li>
+                <li><a href="/">每日推荐</a></li>
+                <li><a href="/">热门</a></li>
+                <li><a href="/">最新</a></li>
             </ul>
         </div>
     </div>
 </div>
 {% block body_wrap %}{% endblock %}
+<div class="page">
+    <div class="nav-bar">
+        <div class="nav-bar-inner padding10">
+            <span class="element">
+                2013, 好吃的网 &copy; by <a href="http://www.haochid.com" class="fg-color-white">www.haochid.com</a>
+            </span>
+        </div>
+    </div>
+</div>
 {% block script_wrap %}{% endblock %}
 </body>
 </html>

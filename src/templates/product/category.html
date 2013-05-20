@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block head_wrap %}
+<script type="text/javascript" src="{% static 'js/carousel.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/slider.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/tile-slider.js' %}"></script>
+<script type="text/javascript">
+    var hasNext = true;
+    var page = 1;
+    $(function(){
+        function loadData(){
+            var pageHeight = Math.max(document.body.scrollHeight ||
+                document.body.offsetHeight);
+            var viewportHeight = window.innerHeight ||
+                document.documentElement.clientHeight ||
+                document.body.clientHeight || 0;
+            var scrollHeight = window.pageYOffset ||
+                document.documentElement.scrollTop ||
+                document.body.scrollTop || 0;
+            if(pageHeight - viewportHeight - scrollHeight < 30 && hasNext == true){
+                hasNext = false;
+                $.getJSON('{% url "product.views.category_products" %}?c={{ id }}&p='+page, function(result){
+                   if(result && result.status == 1){
+                       var html = '';
+                       $.each(result.data, function(i ,v){
+                           if(i == 0 || i % 3 == 0){
+                               html += '<div class="row list">';
+                           }
+                           html += '<div class="span4 bg-color-blue">';
+                           html += '<div class="icon">';
+                           html += '<a href="'+ v.url+'" target="_blank">';
+                           html += '<img src="'+ v.cover+'">';
+                           html += '</a>';
+                           html += '</div>';
+                           html += '<div class="data">';
+                           html += '<a href="'+ v.url+'" target="_blank"><h4>'+ v.title+'</h4></a>';
+                           html += '<p class="fg-color-white">'+ v.content+'</p>'
+                           html += '</div>';
+                           html += '</div>';
+                           if(i % 3 == 2 || i == result.data.length - 1){
+                               html += '</div>';
+                           }
+                       });
+                       $("#product_list").append(html);
+                       hasNext = result.hasNext;
+                   }
+                });
+            }
+        }
+        loadData();
+        $(window).bind('scroll', loadData);
+    });
+</script>
+{% endblock %}
+{% block body_wrap %}
+<div class="page">
+    <div class="page-region">
+        <div class="page-region-content">
+            <div>
+                <a href="" style="float: left; height: 29px; line-height: 29px;">首页</a>
+                <span style="float: left; height: 29px; line-height: 29px;">&nbsp;&gt;&nbsp;</span>
+                <h2 style="float: left;">{{ name }}</h2>
+                <div style="clear: both;"></div>
+            </div>
+            <div class="grid" id="page-index">
+                <div class="row">
+                    <div class="span12">
+                        <div class="hero-unit">
+                            <h3>每日推荐</h3>
+                            <div id="carousel1" class="carousel" data-param-duration="300" data-role="carousel">
+                                <div class="slides">
+                                    {% for p in recommend %}
+                                    <div id="slide{{ forloop.counter }}" class="slide">
+                                        <img src="{{ p.cover }}" height="100%" width="100%" />
+                                        <div class="description"><a href="{% url 'product.views.product' p.id %}" target="_blank">{{ p.title }}</a></div>
+                                    </div>
+
+                                    {% endfor %}
+                                </div>
+                                <span class="control left"><i class="icon-arrow-left-3"></i></span>
+                                <span class="control right"><i class="icon-arrow-right-3"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="grid" id="product_list"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}

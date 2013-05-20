@@ -2,6 +2,7 @@ __author__ = 'biyanbing'
 import datetime
 
 from django.db import models
+from django.core.urlresolvers import reverse
 
 from user.models import User
 
@@ -48,7 +49,7 @@ class Product(models.Model):
     title = models.CharField(cn_key._title, max_length=255)
     category = models.ManyToManyField(Category, null=True, blank=True, verbose_name=cn_key._category)
     tag = models.ManyToManyField(Tag, null=True, blank=True, verbose_name=cn_key._tag)
-    cover = models.FileField(cn_key._cover, null=True, blank=True)
+    cover = models.FileField(cn_key._cover, null=True, blank=True, upload_to='u')
     content = models.TextField(cn_key._content)
     vote_up = models.SmallIntegerField(cn_key._vote_up, default=0)
     vote_down = models.SmallIntegerField(cn_key._vote_down, default=0)
@@ -61,12 +62,15 @@ class Product(models.Model):
 
     def to_dict(self):
         return {
+            'id': self.id,
             'title': self.title,
-            'category': [{'id': c.id, 'name': c.name} for c in self.category],
-            'tag': [{'id': t.id, 'name': t.name} for t in self.tag],
+            'category': [{'id': c.id, 'name': c.name} for c in self.category.all()],
+            'tag': [{'id': t.id, 'name': t.name} for t in self.tag.all()],
             'cover': self.cover.url if self.cover else '',
             'vote_up': self.vote_up,
-            'vote_down': self.vote_down
+            'vote_down': self.vote_down,
+            'content': '%s...' % self.content[0:40],
+            'url': reverse('product', kwargs={'id': self.id})
         }
 
     def increase_vote_up(self, point):

@@ -21,14 +21,16 @@ def get_ip(req):
     return ip
 
 
-def JsonResponse(*args, **kwargs):
-    if args:
-        kwargs['message'] = args[0]
-        kwargs['status'] = kwargs.get('status', 'error')
-    return HttpResponse(json.dumps(kwargs), mimetype='application/json')
+def JsonResponse(message):
+    """
+    :param status:  1   ok
+                    0   error
+                    -1  require login
+    """
+    return HttpResponse(json.dumps(message), mimetype='application/json')
 
 
-def page(qs, count, page):
+def paginator(qs, count, page):
     """ shortcut for get paged result, base on Paginator """
     p = Paginator(qs, count)
     try:

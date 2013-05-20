@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block body_wrap %}
+<div class="page">
+    <div class="page-region">
+        <div class="page-region-content">
+            <div>
+                <a href="" style="float: left; height: 29px; line-height: 29px;">首页</a>
+                <span style="float: left; height: 29px; line-height: 29px;">&nbsp;&gt;&nbsp;</span>
+                <h2 style="float: left;">{{ product.title }}</h2>
+                <div style="clear: both;"></div>
+            </div>
+            <div class="grid">
+                <div class="row detail-body">
+                    <div class="span8">
+                        <img src="{{ product.cover.url }}" alt="{{ product.title }}"/>
+                    </div>
+                    <div class="span4">
+                        <p>
+                            分类：
+                            {% for c in product.category.all %}
+                            <a href="{% url 'product.views.category' c.id %}" target="_blank">{{ c.name }}</a>
+                            {% endfor %}
+                        </p>
+                        <p>{{ product.content }}</p>
+                        <button class="image-button bg-color-green fg-color-white">赞(<span id="vote_up_count">9869</span>)<i class="icon-thumbs-up"></i></button>
+                        <button class="image-button bg-color-pink fg-color-white">踩(459)<i class="icon-thumbs-down"></i></button>
+                        <p class="bg-color-red fg-color-white padding5">扫描二维码，发送给朋友</p>
+                        <img src="{% url 'product.views.qr' %}?url={% url 'product.views.product' product.id %}">
+                    </div>
+                </div>
+                <div class="row">
+
+                </div>
+            </div>
+            <div class="grid">
+                <div class="span12 padding5 bg-color-red">
+                    <div id="map" style="height: 300px;">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script_wrap %}
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=1.5&ak=6a67875e40f6b41443e2a34157342d0d"></script>
+<script type="text/javascript">
+var map = new BMap.Map("map");
+var point = new BMap.Point({{ map.content.point.y }}, {{ map.content.point.x }});
+map.centerAndZoom(point,15);
+var myKeys = ["酒店", "加油站"];
+var local = new BMap.LocalSearch(map, {
+  renderOptions:{map: map}
+});
+local.setPageCapacity(15);
+local.searchInBounds(myKeys, map.getBounds());
+</script>
+{% endblock %}
