@@ -16,6 +16,8 @@ from django.contrib.auth.hashers import UNUSABLE_PASSWORD, identify_hasher
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.models import get_current_site
 
+import cn_key
+
 
 UNMASKED_DIGITS_TO_SHOW = 6
 
@@ -144,8 +146,8 @@ class AuthenticationForm(forms.Form):
     Base class for authenticating users. Extend this to get a form that accepts
     username/password logins.
     """
-    username = forms.CharField(max_length=254)
-    password = forms.CharField(label=_("Password"), widget=forms.PasswordInput)
+    username = forms.CharField(max_length=254, widget=forms.TextInput(attrs={'required': 'required', 'placeholder': _("Please input your email")}))
+    password = forms.CharField(label=_("Password"), widget=forms.PasswordInput(attrs={'required': 'required', 'placeholder': _("Please input your password")}))
 
     error_messages = {
         'invalid_login': _("Please enter a correct %(username)s and password. "

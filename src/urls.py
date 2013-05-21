@@ -30,8 +30,9 @@ urlpatterns = patterns('',
 
                        url(r'^product/(?P<id>\d+)/?', 'product.views.product', name='product'),
 
-
                        url(r'^qr/?', 'product.views.qr', name='qr'),
+
+                       url(r'^callback/(?P<plat>(s|t))/?', 'main.views.callback', name='callback'),
 )
 
 urlpatterns += staticfiles_urlpatterns()

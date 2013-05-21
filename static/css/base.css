@@ -41,3 +41,20 @@
 .detail-body img {
     width: 100%;
 }
+
+form input {
+    margin-bottom: 10px;
+    float: left;
+}
+form label {
+    float: left;
+}
+form .errorlist {
+    float: left;
+}
+form .errorlist li {
+    color: red;
+    padding-left: 5px;
+    height: 20px;
+    display: block;
+}

@@ -72,3 +72,5 @@ validation
 """
 _password_not_match = u'密码不一致。'
 _email_exists = u'邮箱已存在。'
+_please = u'请'
+_input = u'输入'
