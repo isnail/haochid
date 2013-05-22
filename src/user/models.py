@@ -52,7 +52,7 @@ class User(AbstractBaseUser, PermissionsMixin, UserPlat):
     email = models.EmailField(cn_key._email, null=True, blank=True)
     nick_name = models.CharField(cn_key._nick_name, max_length=32, null=True, blank=True)
     access_token = models.CharField(max_length=255, null=True, blank=True)
-    expires_in = models.DateTimeField(null=True, blank=True)
+    expires_in = models.IntegerField(null=True, blank=True)
     gender = models.CharField(cn_key._gender, max_length=1, choices=gender_choices, default=gender_choices[2][0])
     avatar = models.CharField(cn_key._avatar, max_length=511, null=True, blank=True)
     location = models.CharField(cn_key._location, max_length=511, null=True, blank=True)
@@ -66,7 +66,7 @@ class User(AbstractBaseUser, PermissionsMixin, UserPlat):
     objects = CustomUserManager()
 
     def get_short_name(self):
-        return self.nick_name if self.nick_name else ''
+        return self.nick_name if self.nick_name else self.uid.split('@')[0]
 
     def get_full_name(self):
         return self.uid

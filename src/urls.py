@@ -33,6 +33,10 @@ urlpatterns = patterns('',
                        url(r'^qr/?', 'product.views.qr', name='qr'),
 
                        url(r'^callback/(?P<plat>(s|t))/?', 'main.views.callback', name='callback'),
+
+                       url(r'^comment/(?P<product_id>\d+)/?', 'comment.views.comment_list', name='comment_list'),
+                       url(r'^comment/add/?', 'comment.views.comment_add', name='comment_add'),
+                       url(r'^comment/del/?', 'comment.views.comment_del', name='comment_del'),
 )
 
 urlpatterns += staticfiles_urlpatterns()

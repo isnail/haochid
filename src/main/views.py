@@ -3,6 +3,7 @@ import datetime
 
 from django.http import Http404, HttpResponseRedirect
 from django.contrib.auth import authenticate, login as system_login
+from django.utils import timezone
 
 from plat.models import Plat
 from lib.sina.weibo import APIClient as sina
@@ -34,8 +35,9 @@ def callback(req, plat):
         user.gender = u.gender
         user.location = u.location
         user.ip = get_ip(req)
+        user.plat = plat
         user.access_token = access_token
-        user.expires_in = datetime.datetime.now() + datetime.timedelta(seconds=int(expires_in))
+        user.expires_in = expires_in
         user.save()
         user = authenticate(username=uid, password=default_password)
         system_login(req, user)

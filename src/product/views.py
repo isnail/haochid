@@ -14,7 +14,7 @@ def index(req):
     # todo set cookies
     ctx = {}
 
-    return render_to_response('index.html', ctx)
+    return render(req, ctx, 'index.html')
 
 
 def categories(req):

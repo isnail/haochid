@@ -1,41 +1,30 @@
-from django.core.exceptions import ImproperlyConfigured
+import time
 
-# from user.models import UserInfo
-from django.middleware.common import CommonMiddleware
+from django.contrib.auth import logout
+from django.shortcuts import redirect
 
-SESSION_KEY = '_auth_user_id'
+from lib.sina.weibo import APIClient as sina
+from lib.tencent.weibo import APIClient as tencent
 
+from utils import *
+from user.models import User
 
-# class LazyUser(object):
-#     def __get__(self, request, obj_type=None):
-#         if not hasattr(request, '_cached_user'):
-#             user_id = request.session.get(SESSION_KEY, 0)
-#             p = UserInfo.objects.filter(pk=user_id)
-#             if p:
-#                 request._cached_user = p[0]
-#             else:
-#                 request._cached_user = None
-#         return request._cached_user
-#
-#     def __set__(self, request, value):
-#         if isinstance(value, UserInfo) and hasattr(value, 'pk'):
-#             request.session[SESSION_KEY] = int(value.pk)
-#         elif isinstance(value, (long, int)) and UserInfo.objects.filter(pk=value).exists():
-#             request.session[SESSION_KEY] = int(value)
-#         elif not value and request.session.has_key(SESSION_KEY):
-#             del request.session[SESSION_KEY]
-#
-#     def __delete__(self, request):
-#         if request.session.has_key(SESSION_KEY):
-#             del request.session[SESSION_KEY]
-
-
-class UserAuthMiddleware(object):
+class PlatMiddleware(object):
     def process_request(self, request):
-        # assert hasattr(request,
-        #                'session'), "The Django authentication middleware requires session middleware \
-        #                 to be installed. Edit your MIDDLEWARE_CLASSES setting to insert \
-        #                 'django.contrib.sessions.middleware.SessionMiddleware'."
-        # lp = LazyUser()
-        # request.__class__.user = lp
+        # user = request.user
+        # if user and isinstance(user, User) and user.plat and user.plat.name in ('s', 't'):
+        #     if user.plat.name == 's':
+        #         client = sina(user.plat.app_key, user.plat.app_secret)
+        #         client.set_access_token(user.access_token, user.expires_in)
+        #     else:
+        #         client = tencent(user.plat.app_key, user.plat.app_secret)
+        #         client.set_access_token(user.access_token, user.expires_in, user.openid, get_ip(request))
+        #     if client.is_expires():
+        #         logout(request)
+        #     else:
+        #         pass
+        #         r = client.refresh_token(user.access_token)
+        #         user.access_token = r.access_token
+        #         user.expires_in = r.expires_in
+        #         user.save()
         return None

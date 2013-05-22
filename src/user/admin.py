@@ -8,13 +8,13 @@ from models import *
 class UserAdmin(admin.ModelAdmin):
     list_display = (
         'uid', 'nick_name', 'email', 'plat', 'gender', 'location', 'login_location', 'ip', 'is_staff', 'is_active',
-        'is_superuser',
+        'is_superuser', 'expires_in',
         'date_joined', )
     list_filter = ('plat', 'gender', )
     search_fields = ('uid', 'nick_name', 'email', )
     fieldsets = (
         (None, {
-            'fields': ('uid', 'email', )
+            'fields': ('uid', 'email', 'expires_in',)
         }),
         (cn_key._info, {
             'classes': ('collapse', ),

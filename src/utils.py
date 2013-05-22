@@ -10,7 +10,7 @@ from settings import oss_host, access_id, secret_access_key, bucket
 
 
 def render(req, context, templates):
-
+    context['user'] = req.user
     return render_to_response(templates, context)
 
 def get_ip(req):
@@ -47,3 +47,7 @@ def save_to_oss(object, content, content_type):
     oss.get_connection()
     oss.put_object_from_string(bucket, object, content, content_type)
     return '%s' % (object)
+
+
+def replace_html_tags(html):
+    return html.replace('<', '&lt;').replace('>', '&gt;')

@@ -9,6 +9,12 @@ from models import Plat
 import models as site_app
 
 def create_default_plat(app, created_models, verbosity, db, **kwargs):
+    Plat.objects.all().delete()
+    sequence_sql = connections[db].ops.sequence_reset_sql(no_style(), [Plat])
+    if sequence_sql:
+        cursor = connections[db].cursor()
+        for command in sequence_sql:
+            cursor.execute(command)
     Plat(pk=1, name='s', app_key='3839507357', app_secret='984b935c0180dd2af1017550c131350f').save(using=db)
     sequence_sql = connections[db].ops.sequence_reset_sql(no_style(), [Plat])
     if sequence_sql:

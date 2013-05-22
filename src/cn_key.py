@@ -42,6 +42,9 @@ _is_active = u'有效'
 _account = u'帐号'
 _password = u'密码'
 _password_repeat = u'重复密码'
+_comment = u'评论'
+_parent_comment = u'父级评论'
+_is_send = u'是否发送'
 
 """
 status

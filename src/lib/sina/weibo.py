@@ -273,6 +273,7 @@ class APIClient(object):
     def refresh_token(self, refresh_token):
         req_str = '%s%s' % (self.auth_url, 'access_token')
         r = _http_post(req_str, \
+                       authorization = refresh_token,
             client_id = self.client_id, \
             client_secret = self.client_secret, \
             refresh_token = refresh_token, \
