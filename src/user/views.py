@@ -1,13 +1,15 @@
 __author__ = 'biyanbing'
 
 
-from django.contrib.auth import authenticate, login as system_login
+from django.contrib.auth import authenticate, login as system_login, logout
 from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import redirect
 
 from forms import *
 from plat.models import Plat
 from models import *
 from utils import *
+import settings
 
 @csrf_exempt
 def register(req):
@@ -29,9 +31,11 @@ def register(req):
     context['user'] = req.user
     return render(req, context, 'registration/register.html')
 
-def callback(req, plat):
-
-    pass
+def logout(req):
+    logout(req)
+    if hasattr(req, 'user'):
+        req.user = None
+    return redirect(settings.LOGIN_REDIRECT_URL)
 
 
 #

@@ -1,3 +1,4 @@
+
 __author__ = 'biyanbing'
 import datetime
 
@@ -51,9 +52,10 @@ class Product(models.Model):
     tag = models.ManyToManyField(Tag, null=True, blank=True, verbose_name=cn_key._tag)
     cover = models.FileField(cn_key._cover, null=True, blank=True, upload_to='u')
     content = models.TextField(cn_key._content)
-    vote_up = models.SmallIntegerField(cn_key._vote_up, default=0)
-    vote_down = models.SmallIntegerField(cn_key._vote_down, default=0)
-    share = models.SmallIntegerField(cn_key._share, default=0)
+    view_count = models.IntegerField(cn_key._view_count, default=0)
+    vote_up = models.IntegerField(cn_key._vote_up, default=0)
+    vote_down = models.IntegerField(cn_key._vote_down, default=0)
+    share = models.IntegerField(cn_key._share, default=0)
     status = models.CharField(cn_key._status, max_length=1, choices=product_status_choices,
                               default=product_status_choices[0][0])
     author = models.ForeignKey(User, verbose_name=cn_key._author, null=True, blank=True)
@@ -79,6 +81,14 @@ class Product(models.Model):
 
     def increase_vote_down(self, point):
         self.vote_down = models.F('vote_down') + point
+        self.save()
+
+    def increase_share(self):
+        self.share = models.F('share') + 1
+        self.save()
+
+    def increase_view_count(self):
+        self.view_count = models.F('view_count') + 1
         self.save()
 
     def __unicode__(self):
@@ -107,6 +117,17 @@ class DailyRecommended(models.Model):
         verbose_name_plural = '%s%s' % (cn_key._daily, cn_key._recommend)
         # app_label = cn_key._haochid
         # db_table = 'daily_recommended'
+
+
+class HotProduct(models.Model):
+    product = models.ForeignKey(Product, verbose_name=cn_key._product)
+    score = models.IntegerField()
+    created_time = models.DateTimeField(cn_key._created_time, auto_now_add=True)
+
+    class Meta:
+        ordering = ('-score', )
+        verbose_name = '%s' % cn_key._hot_product
+        verbose_name_plural = '%s' % cn_key._hot_product
 
 
 class ProductStatistic(models.Model):

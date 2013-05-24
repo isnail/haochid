@@ -8,7 +8,7 @@ _category = u'分类'
 _created_time = u'创建时间'
 _update_time = u'更新时间'
 _name = u'名称'
-_product = '产品'
+_product = u'产品'
 _title = u'标题'
 _content = u'内容'
 _cover = u'封面'
@@ -45,6 +45,9 @@ _password_repeat = u'重复密码'
 _comment = u'评论'
 _parent_comment = u'父级评论'
 _is_send = u'是否发送'
+_view_count = u'浏览次数'
+_hot = u'热门'
+_hot_product = '%s%s' % (_hot, _product)
 
 """
 status

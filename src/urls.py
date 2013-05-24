@@ -23,6 +23,7 @@ urlpatterns = patterns('',
 
                        url(r'^login/?', 'django.contrib.auth.views.login', name='login'),
                        url(r'^register/?', 'user.views.register', name='register'),
+                       url(r'^logout/?', 'user.views.logout', name='logout'),
 
                        url(r'^categories/?', 'product.views.categories', name='categories'),
                        url(r'^category/(?P<id>\d+)/?', 'product.views.category', name='category'),

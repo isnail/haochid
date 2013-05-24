@@ -4,6 +4,7 @@ import datetime, urllib2, json, StringIO
 from django.shortcuts import render_to_response
 from django.core.urlresolvers import reverse
 from django.http import Http404
+from django.core.cache import cache
 
 from utils import *
 import models
@@ -213,3 +214,69 @@ def vote(req, product_id, vote):
         raise Http404()
 
 
+product_statistic_prefix = 'product_'
+cache_timeout = 36 * 3600
+
+
+def get_product_cache(product):
+    cache_key = '%s%s' % (product_statistic_prefix, product.id)
+    cache_value = cache.get(cache_key)
+    if not cache_value:
+        cache_value = {'v': product.view_count, 's': product.share, 'u': product.vote_up, 'd': product.vote_down}
+        if product.create_time + datetime.timedelta(days=30) > datetime.datetime.now():
+            cache.set(cache_key, cache_value, cache_timeout)
+    return cache_value
+
+
+def update_cache(s_type, product, point=0):
+    if product.create_time + datetime.timedelta(days=30) > datetime.datetime.now():
+        cache_key = '%s%s' % (product_statistic_prefix, product.id)
+        cache_value = get_product_cache(product)
+        cache_value[s_type] += 1
+        cache.set(cache_key, cache_value, cache_timeout)
+    else:
+        if s_type == 's':
+            product.increase_share()
+        elif s_type == 'v':
+            product.increase_view_count()
+        elif s_type == 'u':
+            product.increase_vote_up(point)
+        elif s_type == 'd':
+            product.increase_vote_down(point)
+
+
+from django.db import connection, transaction
+
+
+def hot_cron(req):
+    """
+    create hot product per 3 hours
+    """
+    last_month_ago = datetime.datetime.now() - datetime.timedelta(days=30)
+    products = models.Product.objects.filter(status=models.product_status_choices[0][0],
+                                             create_time__gte=last_month_ago)
+    for product in products:
+        statistic = get_product_cache(product)
+        product.share = statistic['s']
+        product.vote_up = statistic['u']
+        product.vote_down = statistic['d']
+        product.view_count = statistic['v']
+        product.save()
+
+    sql = """
+    truncate %(table)s;
+    insert into %(table)s (product, score, created_time)
+    select
+    a.id,
+    COALESCE((a.view_count + a.share * 10 + a.vote_up * 50 - a.vote_down) / LOG(2.718,
+                    TIMESTAMPDIFF(HOUR, a.created_time, now())) + 1.001),
+            0),
+    now()
+    from %(product)s a
+    where a.create_time > '%(last_month_ago)s' and a.status='A';
+    """
+    sql = sql % {'table': models.HotProduct._meta.db_table, 'product': models.Product._meta.db_table,
+                 'last_month_ago': last_month_ago}
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    pass
