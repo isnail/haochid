@@ -29,7 +29,7 @@ def comment_list(req, product_id):
             for child in children:
                 data['children'].append(child.to_dict(req.user))
             result.append(data)
-        return JsonResponse({'status': 1, 'data': result, 'user': str(req.user)})
+        return JsonResponse({'status': 1, 'data': result, 'user': str(req.user), 'hasNext': qs.has_next()})
 
 
 def comment_add(req):

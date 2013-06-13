@@ -16,8 +16,23 @@
                         <div class="padding5 bg-color-lighten">
                             <img src="{{ product.cover.url }}" alt="{{ product.title }}"/>
                         </div>
-                        <div class="padding5 bg-color-green" style="margin-top: 10px;">
-
+                        <div class="padding5 bg-color-green" style="margin-top: 10px; height: 52px;">
+                            <!-- Baidu Button BEGIN -->
+                            <div id="bdshare" class="bdshare_t bds_tools_32 get-codes-bdshare">
+                            <a class="bds_tqq"></a>
+                            <a class="bds_tsina"></a>
+                            <a class="bds_qzone"></a>
+                            <a class="bds_renren"></a>
+                            <a class="bds_t163"></a>
+                            <span class="bds_more" style="height: 41px;"></span>
+                            <a class="shareCount" style="width: 48px;"></a>
+                            </div>
+                            <script type="text/javascript" id="bdshare_js" data="type=tools&amp;uid=728498" ></script>
+                            <script type="text/javascript" id="bdshell_js"></script>
+                            <script type="text/javascript">
+                            document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?cdnversion=" + Math.ceil(new Date()/3600000)
+                            </script>
+                            <!-- Baidu Button END -->
                         </div>
                     </div>
                     <div class="span4">
@@ -27,9 +42,7 @@
                             <a href="{% url 'product.views.category' c.id %}" target="_blank">{{ c.name }}</a>
                             {% endfor %}
                         </p>
-                        <p>{{ product.content }}</p>
-                        <button class="image-button bg-color-green fg-color-white">赞(<span id="vote_up_count">9869</span>)<i class="icon-thumbs-up"></i></button>
-                        <button class="image-button bg-color-pink fg-color-white">踩(459)<i class="icon-thumbs-down"></i></button>
+                        <p style="word-wrap: break-word;">{{ product.content }}</p>
                         <p class="bg-color-red fg-color-white padding5">扫描二维码，发送给朋友</p>
                         <img src="{% url 'product.views.qr' %}?url={% url 'product.views.product' product.id %}">
                         <div class="padding5 bg-color-pink fg-color-white">
@@ -46,16 +59,18 @@
 </div>
 {% endblock %}
 {% block script_wrap %}
-<script type="text/javascript" src="http://api.map.baidu.com/api?v=1.5&ak=6a67875e40f6b41443e2a34157342d0d"></script>
+{#<script type="text/javascript" src="http://api.map.baidu.com/api?v=1.5&ak=6a67875e40f6b41443e2a34157342d0d"></script>#}
 <script type="text/javascript">
-var map = new BMap.Map("map");
-var point = new BMap.Point({{ map.content.point.y }}, {{ map.content.point.x }});
-map.centerAndZoom(point,15);
-var myKeys = ["酒店", "加油站"];
-var local = new BMap.LocalSearch(map, {
-  renderOptions:{map: map}
-});
-local.setPageCapacity(15);
-local.searchInBounds(myKeys, map.getBounds());
+/*
+    var map = new BMap.Map("map");
+    var point = new BMap.Point({{ map.content.point.y }}, {{ map.content.point.x }});
+    map.centerAndZoom(point,15);
+    var myKeys = ["酒店", "加油站"];
+    var local = new BMap.LocalSearch(map, {
+      renderOptions:{map: map}
+    });
+    local.setPageCapacity(15);
+    local.searchInBounds(myKeys, map.getBounds());
+    */
 </script>
 {% endblock %}

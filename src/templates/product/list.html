@@ -10,28 +10,47 @@
     $(function(){
         function _loadData(){
             hasNext = false;
-            $.getJSON('{% url "product.views.category_products" %}?c={{ id }}&p='+page, function(result){
+            var url = {% if page_name == 'new' %}'{% url "product.views.new" %}'+page{% endif %}
+                      {% if page_name == 'hot' %}'{% url "product.views.hot" %}'+page{% endif %}
+                      {% if page_name == 'category' %}'{% url "product.views.category_products" %}'+'?c={{ id }}&p='+page{% endif %};
+            $.getJSON(url, function(result){
                if(result && result.status == 1){
                    var html = '';
-                   $.each(result.data, function(i ,v){
-                       if(i == 0 || i % 3 == 0){
-                           html += '<div class="row list">';
-                       }
-                       html += '<div class="span4 bg-color-blue">';
-                       html += '<div class="icon">';
-                       html += '<a href="'+ v.url+'" target="_blank">';
-                       html += '<img src="'+ v.cover+'">';
-                       html += '</a>';
+                   if(result.data.products.length == 0){
+                       html += '<div class="row list">';
+                       html += '<div class="span4">';
+                       html += '<div class="image-container '+colorRandom()+'" style="width: 100%">';
+                       html += '<div style="height: 200px; overflow: hidden">';
+                       html += '<h1 class="fg-color-white" style="font-weight: 900; font-size: 128px; line-height: 128px;">404</h1>';
                        html += '</div>';
-                       html += '<div class="data">';
-                       html += '<a href="'+ v.url+'" target="_blank"><h4>'+ v.title+'</h4></a>';
-                       html += '<p class="fg-color-white" style="word-wrap: break-word; padding-right: 10px;">'+ v.content+'</p>';
+                       html += '<div class="overlay">';
+                       html += '<div class="padding10 tertiary-text">';
+                       html += '<h4 class="fg-color-white">这货真没有</h4>';
+                       html += '</div></div>';
+                       html += '</div></div>';
                        html += '</div>';
-                       html += '</div>';
-                       if(i % 3 == 2 || i == result.data.length - 1){
+                   }else{
+                       $.each(result.data.products, function(i ,v){
+                           if(i == 0 || i % 3 == 0){
+                               html += '<div class="row list">';
+                           }
+                           html += '<div class="span4">';
+                           html += '<div class="image-container '+colorRandom()+'" style="width: 100%">';
+                           html += '<div style="height: 200px; overflow: hidden">';
+                           html += '<a href="'+ v.url+'" target="_blank">';
+                           html += '<img src="'+ v.cover+'">';
+                           html += '</a>';
                            html += '</div>';
-                       }
-                   });
+                           html += '<div class="overlay">';
+                           html += '<div class="padding10 tertiary-text">';
+                           html += '<a href="'+ v.url+'" target="_blank"><h4 class="fg-color-white">'+ v.title+'</h4></a>';
+                           html += '</div></div>';
+                           html += '</div></div>';
+                           if(i % 3 == 2 || i == result.data.length - 1){
+                               html += '</div>';
+                           }
+                       });
+                   }
                    $("#product_list").append(html);
                    hasNext = result.hasNext;
                }

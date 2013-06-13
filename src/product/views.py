@@ -1,20 +1,29 @@
 __author__ = 'biyanbing'
 import datetime, urllib2, json, StringIO
 
-from django.shortcuts import render_to_response
+from django.db import connection
 from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.core.cache import cache
+from django.utils import timezone
+from django.shortcuts import get_object_or_404
 
 from utils import *
-import models
+from product import models
+from user.models import User
+from core.decorators import login_required
 import qrcode
+import cn_key
+
+
+default_count = 21
+product_statistic_prefix = 'product_'
+cache_timeout = 36 * 3600
 
 
 def index(req):
     # todo set cookies
     ctx = {}
-
     return render(req, ctx, 'index.html')
 
 
@@ -32,23 +41,19 @@ def categories(req):
     return render(req, ctx, 'product/category-list.html')
 
 
-default_count = 21
-
-
 def category(req, id):
     ctx = {}
-    try:
-        category = models.Category.objects.get(id=id)
-        recommend = models.DailyRecommended.objects.filter(product__category=category).order_by('-date')[:3]
-        ctx['name'] = category.name
-        ctx['id'] = category.id
-        ctx['status'] = 1
-        ctx['recommend'] = [_product_to_dict(r.product, req.user) for r in recommend]
-        if req.GET.get('alt') == 'json':
-            return JsonResponse(ctx)
-        return render(req, ctx, 'product/category.html')
-    except models.Category.DoesNotExist:
-        raise Http404
+    category = get_object_or_404(models.Category, id=id)
+    recommend = models.DailyRecommended.objects.filter(product__category=category).order_by('-date')[:3]
+    ctx['name'] = category.name
+    ctx['id'] = category.id
+    ctx['page_name'] = 'category'
+    ctx['status'] = 1
+    ctx['title'] = category.name
+    ctx['recommend'] = [_product_to_dict(r.product, req.user) for r in recommend]
+    if req.GET.get('alt') == 'json':
+        return JsonResponse(ctx)
+    return render(req, ctx, 'product/list.html')
 
 
 def qr(req):
@@ -58,7 +63,7 @@ def qr(req):
         box_size=10,
     )
     url = req.GET.get('url', '')
-    url = '%s/%s' % (req.get_host(), url)
+    url = '%s%s' % (req.get_host(), url)
     qr.add_data(url)
     qr.make(fit=True)
     img = qr.make_image()
@@ -72,38 +77,35 @@ def category_products(req):
     category_id = req.GET.get('c')
     if not category_id:
         raise Http404
-    try:
-        category = models.Category.objects.get(id=category_id)
-        page = req.GET.get('page', 1)
-        p, qs = paginator(models.Product.objects.filter(category=category), default_count, page)
-        data = [_product_to_dict(q, req.user) for q in qs]
-        ctx['data'] = data
-        ctx['hasNext'] = qs.has_next()
-        ctx['status'] = 1
-        return JsonResponse(ctx)
-    except models.Category.DoesNotExist:
-        raise Http404
+    category = get_object_or_404(models.Category, id=category_id)
+    page = req.GET.get('page', 1)
+    p, qs = paginator(models.Product.objects.filter(category=category), default_count, page)
+    data = [_product_to_dict(q, req.user) for q in qs]
+    ctx['data'] = {'products': data}
+    ctx['hasNext'] = qs.has_next()
+    ctx['status'] = 1
+    return JsonResponse(ctx)
 
 
 def _product_to_dict(product, user=None):
     result = product.to_dict()
-    if user:
-        vote_track = models.VoteTrack.objects.filter(user=user, product=product).values('product_id')
+    if user and isinstance(user, User):
+        vote_track = models.VoteTrack.objects.filter(user=user, product=product).values('product_id', 'vote_status')
         if vote_track:
             vote_info = vote_track[0]
-            result['vote_up'] = True if vote_info.vote_status == models.vote_status_choices[0][0] else False
-            result['vote_down'] = True if vote_info.vote_status == models.vote_status_choices[1][0] else False
+            result['vote_up'] = True if vote_info['vote_status'] == models.vote_status_choices[0][0] else False
+            result['vote_down'] = True if vote_info['vote_status'] == models.vote_status_choices[1][0] else False
     return result
 
 
 def _product_info(product, user=None):
     result = {'id': product.id}
-    if user:
-        vote_track = models.VoteTrack.objects.filter(user=user, product=product).values('product_id')
+    if user and isinstance(user, User):
+        vote_track = models.VoteTrack.objects.filter(user=user, product=product).values('product_id', 'vote_status')
         if vote_track:
             vote_info = vote_track[0]
-            result['vote_up'] = True if vote_info.vote_status == models.vote_status_choices[0][0] else False
-            result['vote_down'] = True if vote_info.vote_status == models.vote_status_choices[1][0] else False
+            result['vote_up'] = True if vote_info['vote_status'] == models.vote_status_choices[0][0] else False
+            result['vote_down'] = True if vote_info['vote_status'] == models.vote_status_choices[1][0] else False
     return result
 
 
@@ -135,8 +137,7 @@ def get_daily(req, date=None):
     return JsonResponse({'status': 1, 'data': result, 'hasNext': drps.has_next()})
 
 
-def new(req):
-    page = req.GET.get('page', 1)
+def new(req, page=1):
     count = req.GET.get('count', default_count)
     try:
         count = int(count)
@@ -150,40 +151,65 @@ def new(req):
     return JsonResponse({'status': 1, 'data': result, 'hasNext': qs.has_next()})
 
 
-def product_info(req, id):
+def new_index(req):
+    ctx = {}
+    ctx['name'] = cn_key._new
+    ctx['page_name'] = 'new'
+    ctx['title'] = cn_key._new
+    return render(req, ctx, 'product/list.html')
+
+def hot(req, page=1):
+    count = req.GET.get('count', default_count)
     try:
-        product = models.Product.objects.get(id=id)
-        data = _product_info(product, req.user)
-        return JsonResponse({'status': 1, 'data': data})
+        count = int(count)
+        if count < 1:
+            count = default_count
     except:
-        raise Http404
+        count = default_count
+    products = models.HotProduct.objects.filter(product__status='A')
+    p, qs = paginator(products, count, page)
+    result = {'products': [_product_to_dict(q.product, req.user) for q in qs]}
+    return JsonResponse({'status': 1, 'data': result, 'hasNext': qs.has_next()})
+
+
+def hot_index(req):
+    ctx = {}
+    ctx['name'] = cn_key._hot
+    ctx['page_name'] = 'hot'
+    ctx['title'] = cn_key._hot
+    return render(req, ctx, 'product/list.html')
+
+
+
+def product_info(req, id):
+    product = get_object_or_404(models.Product, id=id)
+    data = _product_info(product, req.user)
+    data['statistic'] = get_product_cache(product)
+    return JsonResponse({'status': 1, 'data': data})
 
 
 def product(req, id):
     ctx = {}
-    try:
-        product = models.Product.objects.get(id=id, status=models.product_status_choices[0][0])
-        ctx['product'] = product
-
-        baidu_map_url = 'http://api.map.baidu.com/location/ip?ak=D406fa7556e0d44df4f21ecacc2ef843&ip='
-        rs = urllib2.urlopen(baidu_map_url)
-        rs_data = json.loads(rs.read())
-        print rs_data
-        rs_data['content']['point']['x'] = float(rs_data['content']['point']['x']) / 20037508.34 * 180
-        rs_data['content']['point']['y'] = float(rs_data['content']['point']['y']) / 20037508.34 * 180
-        ctx['map'] = rs_data
-        if req.GET.get('alt') == 'json':
-            ctx['product'] = product.to_dict()
-            ctx['status'] = 1
-            return JsonResponse(ctx)
-        return render(req, ctx, 'product/detail.html')
-    except models.Product.DoesNotExist:
-        raise Http404
+    product = get_object_or_404(models.Product, id=id, status=models.product_status_choices[0][0])
+    baidu_map_url = 'http://api.map.baidu.com/location/ip?ak=D406fa7556e0d44df4f21ecacc2ef843&ip='
+    rs = urllib2.urlopen(baidu_map_url)
+    rs_data = json.loads(rs.read())
+    rs_data['content']['point']['x'] = float(rs_data['content']['point']['x']) / 20037508.34 * 180
+    rs_data['content']['point']['y'] = float(rs_data['content']['point']['y']) / 20037508.34 * 180
+    ctx['product'] = product
+    ctx['map'] = rs_data
+    ctx['title'] = product.title
+    if req.GET.get('alt') == 'json':
+        ctx['product'] = product.to_dict()
+        ctx['status'] = 1
+        return JsonResponse(ctx)
+    return render(req, ctx, 'product/detail.html')
 
 
+@login_required()
 def vote(req, product_id, vote):
-    if not req.user:
-        return JsonResponse({'status': -1})
+    if vote not in dict(models.vote_status_choices).keys():
+        raise Http404()
     try:
         product = models.Product.objects.get(id=product_id)
         try:
@@ -192,30 +218,29 @@ def vote(req, product_id, vote):
             if old_status != vote:
                 vote_track.vote_status = vote
                 vote_track.save()
-            if vote == models.vote_status_choices[2][0]:
-                if old_status == models.vote_status_choices[0][0]:
-                    product.increase_vote_up(-1)
-                else:
-                    product.increase_vote_down(-1)
-            else:
-                if old_status != vote:
+                if vote == models.vote_status_choices[2][0]:
+                    # vote = cancel
                     if old_status == models.vote_status_choices[0][0]:
-                        product.increase_vote_up(-1)
+                        # old_status = up
+                        update_cache(vote, product, -1)
                     else:
-                        product.increase_vote_down(-1)
+                        # old_status = down
+                        update_cache(vote, product, -1)
+                else:
+                    if old_status != vote:
+                        if old_status == models.vote_status_choices[0][0]:
+                            update_cache(vote, product, -1)
+                        else:
+                            update_cache(vote, product, -1)
         except models.VoteTrack.DoesNotExist:
             models.VoteTrack.objects.create(user=req.user, product=product, vote_status=vote)
             if vote == models.vote_status_choices[0][0]:
-                product.increase_vote_up(1)
+                update_cache(vote, product, 1)
             elif vote == models.vote_status_choices[1][0]:
-                product.increase_vote_down(1)
+                update_cache(vote, product, 1)
         return JsonResponse('ok')
     except models.Product.DoesNotExist:
         raise Http404()
-
-
-product_statistic_prefix = 'product_'
-cache_timeout = 36 * 3600
 
 
 def get_product_cache(product):
@@ -223,13 +248,12 @@ def get_product_cache(product):
     cache_value = cache.get(cache_key)
     if not cache_value:
         cache_value = {'v': product.view_count, 's': product.share, 'u': product.vote_up, 'd': product.vote_down}
-        if product.create_time + datetime.timedelta(days=30) > datetime.datetime.now():
-            cache.set(cache_key, cache_value, cache_timeout)
+        cache.set(cache_key, cache_value, cache_timeout)
     return cache_value
 
 
 def update_cache(s_type, product, point=0):
-    if product.create_time + datetime.timedelta(days=30) > datetime.datetime.now():
+    if product.created_time + datetime.timedelta(days=30) > timezone.now():
         cache_key = '%s%s' % (product_statistic_prefix, product.id)
         cache_value = get_product_cache(product)
         cache_value[s_type] += 1
@@ -245,14 +269,12 @@ def update_cache(s_type, product, point=0):
             product.increase_vote_down(point)
 
 
-from django.db import connection, transaction
 
-
-def hot_cron(req):
+def _hot_cron():
     """
     create hot product per 3 hours
     """
-    last_month_ago = datetime.datetime.now() - datetime.timedelta(days=30)
+    last_month_ago = datetime.datetime.now() - datetime.timedelta(days=31)
     products = models.Product.objects.filter(status=models.product_status_choices[0][0],
                                              create_time__gte=last_month_ago)
     for product in products:
@@ -280,3 +302,7 @@ def hot_cron(req):
     cursor = connection.cursor()
     cursor.execute(sql)
     pass
+
+def hot_cron(req):
+    _hot_cron()
+    return HttpResponse('ok')

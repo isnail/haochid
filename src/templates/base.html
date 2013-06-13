@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-{% load staticfiles %}
+<!DOCTYPE html>{% load staticfiles %}
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>{{ title }}-{{ site_name }}</title>
+    <title>{% if title %}{{ title }}-{% endif %}{{ site_name }}</title>
     <meta name="keywords" content="">
     <meta name="description" content="">
     <link type="text/css" rel="stylesheet" href="{% static 'css/modern.css' %}">
@@ -13,15 +12,51 @@
     <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/dropdown.js' %}"></script>
     <script type="text/javascript">
-        $(function(){
-            $("a").bind('click', function(){
-                var a = $(this);
-                var href = a.attr('href');
-                if(href.indexOf('javascript') == -1 && href.indexOf('#') == -1){
-                    // $("body").rotate3Di(180, 500);
-                }
-            });
+        $.ajaxSetup({
+             beforeSend: function(xhr, settings) {
+                 function getCookie(name) {
+                     var cookieValue = null;
+                     if (document.cookie && document.cookie != '') {
+                         var cookies = document.cookie.split(';');
+                         for (var i = 0; i < cookies.length; i++) {
+                             var cookie = jQuery.trim(cookies[i]);
+                             // Does this cookie string begin with the name we want?
+                         if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                             cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                             break;
+                         }
+                     }
+                 }
+                 return cookieValue;
+                 }
+                 if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                     // Only send the token to relative URLs i.e. locally.
+                     xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                 }
+             }
         });
+        function colorRandom(){
+            var colorArray = [
+                'bg-color-blue',
+                'bg-color-blueDark',
+                'bg-color-green',
+                'bg-color-greenLight',
+                'bg-color-greenDark',
+                'bg-color-red',
+                'bg-color-yellow',
+                'bg-color-orange',
+                'bg-color-orangeDark',
+                'bg-color-pink',
+                'bg-color-pinkDark',
+                'bg-color-purple',
+                'bg-color-darken',
+                'bg-color-magenta',
+                'bg-color-teal',
+                'bg-color-redLight'
+            ];
+            var tmpIndex = Math.floor(Math.random()*colorArray.length);
+            return colorArray[tmpIndex];
+        }
     </script>
     {% block head_wrap %}{% endblock %}
 </head>
@@ -32,16 +67,16 @@
             <span class="pull-menu"></span>
             <a href="/">
                 <span class="element brand">
-                    <img class="place-left" src="images/logo32.png" style="height: 20px"/>
+                    <img class="place-left" src="{% static 'images/logo32.png' %}" style="height: 20px"/>
                     好吃的
                 </span>
             </a>
             <div class="divider"></div>
             <ul class="menu">
-                <li><a href="/">首页</a></li>
+                <li><a href="{% url 'product.views.index' %}">首页</a></li>
                 <li><a href="/">每日推荐</a></li>
-                <li><a href="/">热门</a></li>
-                <li><a href="/">最新</a></li>
+                <li><a href="{% url 'product.views.hot_index' %}">热门</a></li>
+                <li><a href="{% url 'product.views.new_index' %}">新货</a></li>
             </ul>
         </div>
     </div>

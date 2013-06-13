@@ -2,7 +2,6 @@ __author__ = 'Dany Bee'
 
 from django.db.models import signals
 from django.db import connections
-from django.db import router
 from django.core.management.color import no_style
 
 from models import Plat

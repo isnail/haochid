@@ -22,6 +22,21 @@
                                         {{ form.password.errors }}
                                         <div style="clear: both"></div>
                                     </div>
+
+                                    <div class="notices">
+                                        <div class="bg-color-red">
+                                            <a class="close" href="javascript:;" onclick="$(this).parent().parent().remove();"></a>
+                                            <div class="notice-icon"><img src="{% static 'images/shield-user.png' %}"></div>
+                                            <div class="notice-image"><img src="{% static 'images/armor.png' %}"></div>
+                                            <div class="notice-header fg-color-yellow">登录失败</div>
+                                            <div class="notice-text">
+                                                请检查您的帐号和密码！
+                                                <br>
+                                                请妥善保管好您的重要信息。
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <button class="image-button bg-color-blue fg-color-white">
                                         登录
                                         <i class="icon-enter"></i>
@@ -42,7 +57,7 @@
 
                         </div>
                         <div class="span6">
-sda
+
                         </div>
                     </div>
                 </div>

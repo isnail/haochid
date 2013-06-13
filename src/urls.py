@@ -22,6 +22,7 @@ urlpatterns = patterns('',
                        #     {'document_root': settings.STATIC_ROOT, 'show_indexes': True}, name='static'),
 
                        url(r'^login/?', 'django.contrib.auth.views.login', name='login'),
+                       url(r'^ajax-login/?', 'user.views.ajax_login', name='ajax_login'),
                        url(r'^register/?', 'user.views.register', name='register'),
                        url(r'^logout/?', 'user.views.logout', name='logout'),
 
@@ -30,6 +31,14 @@ urlpatterns = patterns('',
                        url(r'^category-products/?', 'product.views.category_products', name='category_products'),
 
                        url(r'^product/(?P<id>\d+)/?', 'product.views.product', name='product'),
+                       url(r'^product-info/(?P<id>\d+)/?', 'product.views.product_info', name='product_info'),
+                       url(r'^hot/?$', 'product.views.hot_index', name='hot_index'),
+                       url(r'^hot-list/((?P<page>\d+)/?)?', 'product.views.hot', name='hot'),
+                       url(r'^new/?$', 'product.views.new_index', name='new_index'),
+                       url(r'^new-list/((?P<page>\d+)/?)?', 'product.views.new', name='new'),
+
+                       url(r'^vote/(?P<product_id>\d+)/((?P<vote>\w)/?)?', 'product.views.vote', name='vote'),
+
 
                        url(r'^qr/?', 'product.views.qr', name='qr'),
 

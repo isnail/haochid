@@ -114,6 +114,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 
     def save_model(self, request, obj, form, change):
+        obj.save()
         cover = request.FILES.get('cover')
         if cover:
             path = 'images/products/%s/%s' % (obj.pk, cover.name)

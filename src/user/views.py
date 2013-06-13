@@ -4,6 +4,7 @@ __author__ = 'biyanbing'
 from django.contrib.auth import authenticate, login as system_login, logout
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect
+from django.contrib.auth.forms import AuthenticationForm
 
 from forms import *
 from plat.models import Plat
@@ -36,6 +37,16 @@ def logout(req):
     if hasattr(req, 'user'):
         req.user = None
     return redirect(settings.LOGIN_REDIRECT_URL)
+
+def ajax_login(req):
+    if req.method == "POST":
+        form = AuthenticationForm(data=req.POST)
+        if form.is_valid():
+            system_login(req, form.get_user())
+            if req.session.test_cookie_worked():
+                req.session.delete_test_cookie()
+            return JsonResponse({'status': 1})
+    return JsonResponse({'status': -1, 'error': True})
 
 
 #

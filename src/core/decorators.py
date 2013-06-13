@@ -1,3 +1,4 @@
+
 __author__ = 'biyanbing'
 
 from functools import wraps
@@ -13,7 +14,7 @@ def login_required(response_type='redirect', redirect_to_view=None, sign_in_redi
         def _wrapped_func(request, *args, **kwargs):
             if not request.user or not request.user.is_authenticated():
                 if request.is_ajax():
-                    return JsonResponse({'status': -1, 'next': request.get_full_path()})
+                    return JsonResponse({'status': -1, 'url': reverse('ajax_login')})
                 return redirect('%s?next=%s' % (reverse('login'), request.get_full_path()))
             return func(request, *args, **kwargs)
         return _wrapped_func

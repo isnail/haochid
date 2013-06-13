@@ -7,66 +7,37 @@
     <div class="page">
         <div class="page-region">
             <div class="page-region-content">
-
                 <div class="grid">
                     <div class="row">
                         <div class="span4 bg-color-red">
                             <img src="{% static 'images/simple.png' %}" class="place-right" style="margin: 10px;"/>
-                            <h2 class="fg-color-white">&nbsp;{{ user.uid }}</h2>
+                            <a href="{% url 'product.views.hot_index' %}">
+                                <h2 class="fg-color-white">&nbsp;热门</h2>
+                            </a>
                         </div>
 
                         <div class="span4 bg-color-green">
                             <img src="{% static 'images/grid.png' %}" class="place-right" style="margin: 10px;"/>
-                            <h2 class="fg-color-white">&nbsp;New{{ user.uid }}</h2>
+                            <a href="{% url 'product.views.new_index' %}">
+                                <h2 class="fg-color-white">&nbsp;新货</h2>
+                            </a>
                         </div>
 
                         <div class="span4 bg-color-pink">
                             <img src="{% static 'images/responsive.png' %}" class="place-right" style="margin: 10px;"/>
-                            <h2 class="fg-color-white">&nbsp;Recommend</h2>
+                            <h2 class="fg-color-white">&nbsp;每日推荐</h2>
                         </div>
                     </div>
                 </div>
                 <div class="grid">
-                    <div class="row">
-                        <h2>Hot</h2>
-                        <div class="span4">
-                            <div class="image-container bg-color-red" style="width: 100%">
-                                <div style="height: 200px; overflow: hidden"><img src="{% static 'images/spface.jpg' %}" /></div>
-                                <div class="overlay">
-                                    <div class="padding5 fg-color-white tertiary-text">
-                                        <b><a href="#">Title</a></b>
-                                        <br>
-                                        <span>sdsdkjsdf</span>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                        <div class="span4">
-                            <div class="image-container bg-color-green" style="width: 100%">
-                                <div style="height: 200px; overflow: hidden"><img src="{% static 'images/spface.jpg' %}" /></div>
-                                <div class="overlay">
-                                    <div class="padding10 fg-color-white tertiary-text">Sergey Volkov - Voljskiy, Russia. Team member. Javascript lead.</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="span4">
-                            <div class="image-container bg-color-pink" style="width: 100%">
-                                <div style="height: 200px; overflow: hidden"><img src="{% static 'images/spface.jpg' %}" /></div>
-                                <div class="overlay">
-                                    <div class="padding10 fg-color-white tertiary-text">Valerio Battaglia - Ticino, Switzerland. Team member. CSS/LESS, HTML, Javascript.</div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="row" id="id_recommend" style="display: none;">
+                        <h2>每日推荐</h2>
                     </div>
-                </div>
-                <div class="grid">
-                    <div class="row">
-                        <div class="span8">
-                            <div class="padding5 bg-color-red" style="width: 100%">
-                                <div id="bmap" style="height: 300px;"></div>
-                            </div>
-                        </div>
+                    <div class="row" id="id_hot" style="display: none;">
+                        <h2>热门</h2>
+                    </div>
+                    <div class="row" id="id_new" style="display: none;">
+                        <h2>新货</h2>
                     </div>
                 </div>
             </div>
@@ -76,50 +47,41 @@
 
 {% endblock %}
 {% block script_wrap %}
-<script type="text/javascript" src="http://api.map.baidu.com/api?v=1.5&ak=6a67875e40f6b41443e2a34157342d0d"></script>
-<!--
-<script type="text/javascript" src="http://api.map.baidu.com/library/SearchInfoWindow/15/src/SearchInfoWindow_min.js"></script>
-<link rel="stylesheet" href="http://api.map.baidu.com/library/SearchInfoWindow/15/src/SearchInfoWindow_min.css" />
--->
 <script type="text/javascript">
-
-var map = new BMap.Map("bmap");
-var point = new BMap.Point();
-map.centerAndZoom(point,15);
-map.enableScrollWheelZoom();
-//map.addControl(new BMap.NavigationControl());  //添加默认缩放平移控件
-
-
-function myFun(result){
-    var cityName = result.name;
-    map.setCenter(cityName);
-}
-var myCity = new BMap.LocalCity();
-myCity.get(myFun);
-
-var local = new BMap.LocalSearch(map, {
-  renderOptions:{map: map}
-});
-var myKeys = ["酒店", "加油站"];
-local.searchInBounds(myKeys, map.getBounds());
-
-map.addEventListener("dragend",function(){
-    map.clearOverlays();
-    local.searchInBounds(myKeys, map.getBounds());
-});
-/*
-var local = new BMap.LocalSearch(map, {
-  renderOptions:{map: map}
-});
-local.searchInBounds("火锅", map.getBounds());
-*/
-/*
-map.addEventListener("dragend",function(){
-    map.clearOverlays();
-    local.searchInBounds("火锅", map.getBounds());
-});
-*/
-
-
+    $(function(){
+        getProducts("{% url 'product.views.hot' %}", $("#id_hot"));
+        getProducts("{% url 'product.views.new' %}", $("#id_new"));
+    });
+    function getProducts(url, div){
+        $.get(url,function(result){
+            if(result.status == 1){
+                if(result.data.products.length > 0){
+                    var html = '';
+                    $.each(result.data.products, function(i ,v){
+                        if(i == 0 || i % 3 == 0){
+                           html += '<div class="row list">';
+                        }
+                        html += '<div class="span4">';
+                        html += '<div class="image-container '+colorRandom()+'" style="width: 100%">';
+                        html += '<div style="height: 200px; overflow: hidden">';
+                        html += '<a href="'+ v.url+'">';
+                        html += '<img src="'+ v.cover+'">';
+                        html += '</a>';
+                        html += '</div>';
+                        html += '<div class="overlay">';
+                        html += '<div class="padding10 tertiary-text">';
+                        html += '<a href="'+ v.url+'"><h4 class="fg-color-white">'+ v.title+'</h4></a>';
+                        html += '</div></div>';
+                        html += '</div></div>';
+                        if(i % 3 == 2 || i == result.data.length - 1){
+                           html += '</div>';
+                        }
+                    });
+                    $(div).append(html);
+                    $(div).show();
+                }
+            }
+        });
+    }
 </script>
 {% endblock %}

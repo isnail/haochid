@@ -1,5 +1,7 @@
 __author__ = 'biyanbing'
 import json
+
+from django.contrib.sites.models import get_current_site
 from django.http import HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render_to_response
@@ -7,10 +9,11 @@ from django.shortcuts import render_to_response
 # from user.models import UserInfo
 from oss.oss_api import *
 from settings import oss_host, access_id, secret_access_key, bucket
-
+from user.models import User
 
 def render(req, context, templates):
-    context['user'] = req.user
+    context['user'] = req.user if isinstance(req.user, User) else None
+    context['site_name'] = get_current_site(req).name
     return render_to_response(templates, context)
 
 def get_ip(req):

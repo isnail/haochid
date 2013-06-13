@@ -69,8 +69,8 @@ class Product(models.Model):
             'category': [{'id': c.id, 'name': c.name} for c in self.category.all()],
             'tag': [{'id': t.id, 'name': t.name} for t in self.tag.all()],
             'cover': self.cover.url if self.cover else '',
-            'vote_up': self.vote_up,
-            'vote_down': self.vote_down,
+            'vote_up_count': self.vote_up,
+            'vote_down_count': self.vote_down,
             'content': '%s...' % self.content[0:40],
             'url': reverse('product', kwargs={'id': self.id})
         }
