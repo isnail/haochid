@@ -167,4 +167,7 @@ hr {
     .metrouicss #brand-name {
         display: none;
     }
+    .metrouicss .carousel .slides .slide img {
+        display: block;
+    }
 }

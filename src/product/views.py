@@ -22,8 +22,9 @@ cache_timeout = 36 * 3600
 
 
 def index(req):
-    # todo set cookies
     ctx = {}
+    recommend = models.DailyRecommended.objects.all().order_by('-date')[:3]
+    ctx['recommend'] = [_product_to_dict(r.product, req.user) for r in recommend]
     return render(req, ctx, 'index.html')
 
 

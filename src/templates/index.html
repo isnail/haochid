@@ -7,6 +7,37 @@
     <div class="page">
         <div class="page-region">
             <div class="page-region-content">
+                <div class="grid" id="page-index">
+                    <div class="row">
+                        <div class="span8">
+                            <div class="hero-unit">
+                                <h3>每日推荐</h3>
+                                <div id="carousel1" class="carousel" data-param-duration="300" data-role="carousel">
+                                    <div class="slides" id="id_recommend">
+                                        {% for p in recommend %}
+                                        <div id="slide{{ forloop.counter }}" class="slide">
+                                            <img src="{{ p.cover }}" width="100%" style="overflow: hidden;" />
+                                            <div class="description"><a href="{% url 'product.views.product' p.id %}" target="_blank">{{ p.title }}</a></div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    <span class="control left"><i class="icon-arrow-left-3"></i></span>
+                                    <span class="control right"><i class="icon-arrow-right-3"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="span4">
+                            <div class="bg-color-magenta hero-unit" style="height: 424px;">
+                                <h2 class="fg-color-white">吃货宣言</h2>
+                                <p class="fg-color-white">
+                                    吃货是一种生活态度，好吃说明咱热爱生活！<br>
+                                    我们的目的不是吃好，是要吃出一种艺术！<br>
+                                    <b>我是吃货，我喂自己袋盐！</b>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="grid">
                     <div class="row">
                         <div class="span4 bg-color-red">
@@ -15,14 +46,12 @@
                                 <h2 class="fg-color-white">&nbsp;热门</h2>
                             </a>
                         </div>
-
                         <div class="span4 bg-color-green">
                             <img src="{% static 'images/grid.png' %}" class="place-right" style="margin: 10px;"/>
                             <a href="{% url 'product.views.new_index' %}">
                                 <h2 class="fg-color-white">&nbsp;新货</h2>
                             </a>
                         </div>
-
                         <div class="span4 bg-color-pink">
                             <img src="{% static 'images/responsive.png' %}" class="place-right" style="margin: 10px;"/>
                             <h2 class="fg-color-white">&nbsp;每日推荐</h2>
@@ -30,9 +59,6 @@
                     </div>
                 </div>
                 <div class="grid">
-                    <div class="row" id="id_recommend" style="display: none;">
-                        <h2>每日推荐</h2>
-                    </div>
                     <div class="row" id="id_hot" style="display: none;">
                         <h2>热门</h2>
                     </div>
@@ -43,10 +69,12 @@
             </div>
         </div>
     </div>
-    {{ content.address_detail.city }}
 
 {% endblock %}
 {% block script_wrap %}
+<script type="text/javascript" src="{% static 'js/carousel.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/slider.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/tile-slider.js' %}"></script>
 <script type="text/javascript">
     $(function(){
         getProducts("{% url 'product.views.hot' %}", $("#id_hot"));
