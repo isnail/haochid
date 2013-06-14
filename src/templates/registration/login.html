@@ -22,7 +22,7 @@
                                         {{ form.password.errors }}
                                         <div style="clear: both"></div>
                                     </div>
-
+                                    {% if form.non_field_errors %}
                                     <div class="notices">
                                         <div class="bg-color-red">
                                             <a class="close" href="javascript:;" onclick="$(this).parent().parent().remove();"></a>
@@ -36,7 +36,7 @@
                                             </div>
                                         </div>
                                     </div>
-
+                                    {% endif %}
                                     <button class="image-button bg-color-blue fg-color-white">
                                         登录
                                         <i class="icon-enter"></i>
@@ -50,7 +50,7 @@
                                     腾讯微博
                                     <img src="{% static 'images/tencent.png' %}">
                                 </button>
-                                <button class="bg-color-greenDark fg-color-white">
+                                <button class="bg-color-greenDark fg-color-white" onclick="window.location='{% url "user.views.register" %}'">
                                     注册
                                 </button>
                             </div>

@@ -78,6 +78,10 @@ _plat = u'平台'
 validation
 """
 _password_not_match = u'密码不一致。'
-_email_exists = u'邮箱已存在。'
+_email_exists = u'邮箱已存在.'
 _please = u'请'
 _input = u'输入'
+_email_required = u'请输入您的帐号.'
+_email_error = u'请输入正确的邮箱.'
+_password_required = u'请输入您的密码.'
+_password_length_limit = u'请输入大于6位的密码.'

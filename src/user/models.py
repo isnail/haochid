@@ -65,6 +65,10 @@ class User(AbstractBaseUser, PermissionsMixin, UserPlat):
     USERNAME_FIELD = 'uid'
     objects = CustomUserManager()
 
+    @property
+    def name(self):
+        return self.get_short_name()
+
     def get_short_name(self):
         return self.nick_name if self.nick_name else self.uid.split('@')[0]
 

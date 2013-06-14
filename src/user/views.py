@@ -26,10 +26,12 @@ def register(req):
             user.save()
             user = authenticate(username=user.uid, password=form.cleaned_data.get('password'))
             system_login(req, user)
+            return render(req, {}, 'registration/register_success.html')
     else:
         form = UserRegisterForm()
     context['form'] = form
     context['user'] = req.user
+    context['title'] = cn_key._register
     return render(req, context, 'registration/register.html')
 
 def logout(req):

@@ -1,4 +1,4 @@
-<!DOCTYPE html>{% load staticfiles %}
+<!DOCTYPE html>{% load staticfiles %}{% load filter %}
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -78,6 +78,18 @@
                 <li><a href="{% url 'product.views.hot_index' %}">热门</a></li>
                 <li><a href="{% url 'product.views.new_index' %}">新货</a></li>
             </ul>
+            <div class="fg-color-white" style="height: 30px; float: right;">
+                {% if user|isinst:"user.models.User" %}
+
+                    <span class="fg-color-white" style="line-height: 30px; font-weight: 900;">欢迎您, {{ user.name }}</span>
+                    {% if user.avatar %}
+                        <img width="30" height="30" style="border-radius: 3px;" src="{{ user.avatar }}" />
+                    {% endif %}
+                {% else %}
+                    <a class="fg-color-white" style="line-height: 30px;" href="{% url 'django.contrib.auth.views.login' %}">登录</a> |
+                    <a class="fg-color-white" style="line-height: 30px;" href="{% url 'user.views.register' %}">注册</a>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>

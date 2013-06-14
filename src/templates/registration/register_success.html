@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block body_wrap %}
+    <div class="page">
+        <div class="page-region">
+            <div class="page-region-content">
+                <div class="grid bg-color-lighten" style="margin-bottom: 0">
+                    <div class="row">
+                        <div class="span12 bg-color-red fg-color-white" style="height: 200px; font-size: 48px; text-align: center; padding: 50px;">
+                            <p>恭喜您，一个新的吃货诞生了！<p>
+                            <p>请妥善保管好您的重要信息，5秒后跳转到<a href="{% url 'product.views.index' %}">首页</a><p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script_wrap %}
+<script type="text/javascript">
+window.setTimeout(function(){
+    window.location = '{% url 'product.views.index' %}';
+}, 5000);
+</script>
+{% endblock %}

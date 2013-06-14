@@ -1,14 +1,67 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>register</title>
-</head>
-<body>
-<form action="" method="post">{{ user.email }}
-    {{ form.email.label }}: {{ form.email }}{{ form.email.errors }}
-    {{ form.password.label }}: {{ form.password }}{{ form.password.errors }}
-    {{ form.password_repeat.label }}: {{ form.password_repeat }}{{ form.password_repeat.errors }}
-    <input type="submit">
-</form>
-</body>
-</html>
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block body_wrap %}
+    <div class="page">
+        <div class="page-region">
+            <div class="page-region-content">
+                <div class="grid bg-color-lighten" style="margin-bottom: 0">
+                    <div class="row">
+                        <div class="span6">
+                            <div class="padding20">
+                                <h2>注册</h2>
+                                <form action="" method="post">{% csrf_token %}
+                                    <div>
+                                    <label for="id_email">{{ form.email.label }}:</label>
+                                        {{ form.email }}
+                                        {{ form.email.errors }}
+                                        <div style="clear: both"></div>
+                                    </div>
+                                    <div>
+                                    <label for="id_password">{{ form.password.label }}:</label>
+                                        {{ form.password }}
+                                        {{ form.password.errors }}
+                                        <div style="clear: both"></div>
+                                    </div>
+                                    <div>
+                                    <label for="id_password_repeat">{{ form.password_repeat.label }}:</label>
+                                        {{ form.password_repeat }}
+                                        {{ form.password_repeat.errors }}
+                                        <div style="clear: both"></div>
+                                    </div>
+
+                                    <button class="image-button bg-color-blue fg-color-white">
+                                        注册
+                                        <i class="icon-enter"></i>
+                                    </button>
+                                </form>
+                                <button class="image-button bg-color-green fg-color-white" onclick="window.location = 'https://api.weibo.com/oauth2/authorize?client_id=421659899&response_type=code&redirect_uri=http://haochid.com/callback/s';">
+                                    新浪微博
+                                    <img src="{% static 'images/sina.png' %}">
+                                </button>
+                                <button class="image-button bg-color-red fg-color-white" onclick="window.location ='https://open.t.qq.com/cgi-bin/oauth2/authorize?client_id=801167659&response_type=code&redirect_uri=http://haochid.com/callback/t'">
+                                    腾讯微博
+                                    <img src="{% static 'images/tencent.png' %}">
+                                </button>
+                                <button class="bg-color-greenDark fg-color-white" onclick="window.location='{% url "django.contrib.auth.views.login" %}'">
+                                    登录
+                                </button>
+                            </div>
+
+                        </div>
+                        <div class="span6">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script_wrap %}
+<style>
+form label {
+    width: 63px;
+    text-align: right;
+}
+</style>
+{% endblock %}
