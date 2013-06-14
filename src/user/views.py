@@ -11,6 +11,7 @@ from plat.models import Plat
 from models import *
 from utils import *
 import settings
+from core.decorators import login_required
 
 @csrf_exempt
 def register(req):
@@ -49,6 +50,21 @@ def ajax_login(req):
                 req.session.delete_test_cookie()
             return JsonResponse({'status': 1})
     return JsonResponse({'status': -1, 'error': True})
+
+
+@login_required()
+def account(req):
+    user = req.user
+    ctx = {'title': ''}
+    if req.method == "POST":
+        form = UserAccountForm(req.POST)
+        if form.is_valid():
+            ctx['success'] = True
+            pass
+        ctx['form'] = form
+    else:
+        ctx['form'] = UserAccountForm(instance=user)
+    return render(req, ctx, 'user/account.html')
 
 
 #

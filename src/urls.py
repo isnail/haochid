@@ -25,6 +25,7 @@ urlpatterns = patterns('',
                        url(r'^ajax-login/?', 'user.views.ajax_login', name='ajax_login'),
                        url(r'^register/?', 'user.views.register', name='register'),
                        url(r'^logout/?', 'user.views.logout', name='logout'),
+                       url(r'^account/?', 'user.views.account', name='account'),
 
                        url(r'^categories/?', 'product.views.categories', name='categories'),
                        url(r'^category/(?P<id>\d+)/?', 'product.views.category', name='category'),
@@ -50,3 +51,4 @@ urlpatterns = patterns('',
 )
 
 urlpatterns += staticfiles_urlpatterns()
+

@@ -11,7 +11,7 @@ import cn_key
 gender_choices = (
     ('m', cn_key._male),
     ('f', cn_key._female),
-    ('n', cn_key._unknown),
+    ('n', cn_key._no_say),
 )
 
 
@@ -85,7 +85,6 @@ class User(AbstractBaseUser, PermissionsMixin, UserPlat):
         verbose_name = cn_key._user
         verbose_name_plural = cn_key._user
         swappable = 'AUTH_USER_MODEL'
-
 
 
 

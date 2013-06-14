@@ -49,6 +49,7 @@ _view_count = u'浏览次数'
 _hot = u'热门'
 _hot_product = '%s%s' % (_hot, _product)
 _new = u'新货'
+_no_say = u'不想说'
 
 """
 status

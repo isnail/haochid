@@ -16,8 +16,6 @@ from django.contrib.auth.hashers import UNUSABLE_PASSWORD, identify_hasher
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.models import get_current_site
 
-import cn_key
-
 
 UNMASKED_DIGITS_TO_SHOW = 6
 
