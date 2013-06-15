@@ -4,48 +4,69 @@
     <div class="page">
         <div class="page-region">
             <div class="page-region-content">
-                <div class="grid bg-color-lighten" style="margin-bottom: 0">
+                <div class="grid bg-color-green fg-color-white" style="margin-bottom: 0">
                     <div class="row">
+                        {% if user.plat.name != 't' and user.plat.name != 's' %}
                         <div class="span3">
-
+                            <div class="padding20">
+                                <a href="{% url 'user.views.account' %}"><h3 class="fg-color-red"><i class="icon-arrow-down-3"></i>个人信息</h3></a>
+                                <a href="{% url 'user.views.change_password' %}"><h3 class="fg-color-white"><i class="icon-arrow-right-3"></i>修改密码</h3></a>
+                            </div>
                         </div>
-                        <div class="span9">
-                            <div class="padding20" style="border-left: 1px solid #ccc;">
-                                <h2>个人信息</h2>
-                                <form action="" method="post">{% csrf_token %}
+                        {% endif %}
+                        <div class="span9" style="margin-top: 5px;">
+                            <div class="padding20" {% if user.plat.name != 't' and user.plat.name != 's' %}style="border-left: 1px solid #ccc;"{% endif %}>
+                                <h2 class="fg-color-white">个人信息</h2>
+                                {% if success %}
+                                <div class="notices">
+                                    <div class="bg-color-green" style="height: 60px;">
+                                        <div class="notice-icon"><img src="{% static 'images/armor.png' %}"></div>
+                                        <div class="notice-header fg-color-white">修改成功！</div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
                                     <div>
-                                    <label for="id_nick_name">{{ form.nick_name.label }}:</label>
+                                        <label for="id_nick_name">{{ form.nick_name.label }}:</label>
                                         {{ form.nick_name }}
                                         {{ form.nick_name.errors }}
                                         <div style="clear: both"></div>
                                     </div>
                                     <div>
-                                    <label for="id_email">{{ form.email.label }}:</label>
+                                        <label for="id_email">{{ form.email.label }}:</label>
                                         {{ form.email }}
                                         {{ form.email.errors }}
                                         <div style="clear: both"></div>
                                     </div>
                                     <div>
-                                    <label for="id_avatar">{{ form.avatar.label }}:</label>
-                                        {{ form.avatar }}
-                                        {{ form.avatar.errors }}
-                                        <div style="clear: both"></div>
+                                        <label for="id_avatar">{{ form.avatar.label }}:</label>
+                                        <div class="btn_addPic">
+                                            <span><em>+</em>添加图片</span>
+                                            {{ form.avatar }}
+                                            {{ form.avatar.errors }}
+                                            <div style="clear: both"></div>
+                                        </div>
+                                        <div class="avatar" style="margin-top: 10px; margin-left: 75px;">
+                                            {% if user.avatar %}
+                                            <img src="{{ user.avatar }}" width="59" height="59"/>
+                                            {% endif %}
+                                        </div>
                                     </div>
                                     <div>
-                                    <label for="id_gender">{{ form.gender.label }}:</label>
+                                        <label for="id_gender">{{ form.gender.label }}:</label>
                                         {{ form.gender }}
                                         {{ form.gender.errors }}
                                         <div style="clear: both"></div>
                                     </div>
                                     <div>
-                                    <label for="id_location">{{ form.location.label }}:</label>
+                                        <label for="id_location">{{ form.location.label }}:</label>
                                         {{ form.location }}
                                         {{ form.location.errors }}
                                         <div style="clear: both"></div>
                                     </div>
-                                    <button class="image-button bg-color-blue fg-color-white">
+                                    <button class="image-button bg-color-red fg-color-white">
                                         保存
-                                        <i class="icon-enter"></i>
+                                        <i class="icon-save"></i>
                                     </button>
                                 </form>
                             </div>
@@ -59,21 +80,6 @@
 {% endblock %}
 {% block script_wrap %}
 <style>
-form label {
-    width: 63px;
-    text-align: right;
-}
-form ul li {
-    float: left;
-    list-style: none outside none;
-}
-form ul li label {
-    width: auto;
-    text-align: left;
-}
-form ul li label input {
-    margin: 0;
-    margin-top: 4px;
-}
+
 </style>
 {% endblock %}

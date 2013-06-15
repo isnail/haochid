@@ -8,7 +8,7 @@ from django.shortcuts import render_to_response
 
 # from user.models import UserInfo
 from oss.oss_api import *
-from settings import oss_host, access_id, secret_access_key, bucket
+from settings import oss_host, access_id, secret_access_key, bucket, MEDIA_URL
 from user.models import User
 
 def render(req, context, templates):

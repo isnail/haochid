@@ -53,12 +53,24 @@ def ajax_login(req):
 
 
 @login_required()
+@csrf_exempt
 def account(req):
     user = req.user
     ctx = {'title': ''}
     if req.method == "POST":
         form = UserAccountForm(req.POST)
         if form.is_valid():
+            data = form.cleaned_data
+            data.pop('avatar')
+            avatar = req.FILES.get('avatar')
+            if avatar:
+                name = avatar.name
+                ext = name.split('.')[-1]
+                if ext.lower() in ('jpg', 'jpeg', 'gif', 'png'):
+                    name = 'avatar.%s' % ext.lower()
+                    data['avatar'] = '%s%s' % (settings.MEDIA_URL, save_to_oss('images/user/%s/%s' % (user.pk, name), avatar.read(), avatar.content_type))
+            User.objects.filter(pk=user.pk).update(**data)
+            req.user = User.objects.get(pk=user.pk)
             ctx['success'] = True
             pass
         ctx['form'] = form
@@ -67,25 +79,19 @@ def account(req):
     return render(req, ctx, 'user/account.html')
 
 
-#
-#
-# def get_ip(req):
-#     if req.META.has_key('HTTP_X_FORWARDED_FOR'):
-#         ip =  req.META['HTTP_X_FORWARDED_FOR']
-#     else:
-#         ip = req.META.get('REMOTE_ADDR', '')
-#     return ip
-#
-# def register(req):
-#     if req.method == 'POST':
-#         form = UserForm(req.POST)
-#         if form.is_valid():
-#             plat = Plat.objects.get(name='l')
-#             user = User.objects.create_user(form.changed_data.get('email'), form.changed_data.get('email'),
-#                                             form.changed_data.get('password'))
-#             user_info = UserInfo.objects.create(system_user=user, plat=plat, uid=user.email, ip=get_ip(req))
-#             login(req, user)
-#             req.__class__.user_info = user_info
-#         pass
-#
-#     return
+@login_required()
+@csrf_exempt
+def change_password(req):
+    user = req.user
+    ctx = {}
+    if req.method == 'POST':
+        form = ChangePasswordForm(user=user, data=req.POST)
+        if form.is_valid():
+            user.set_password(form.cleaned_data.get('new_password'))
+            user.save()
+            ctx['success'] = True
+        ctx['form'] = form
+    else:
+        ctx['form'] = ChangePasswordForm(user=user)
+    return render(req, ctx, 'user/change_password.html')
+

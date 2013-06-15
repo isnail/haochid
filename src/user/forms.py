@@ -7,9 +7,23 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 import cn_key
 from models import User
 from utils import check_email
+from core.forms import ErrorList
 
 
 class UserAccountForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(UserAccountForm, self).__init__(error_class=ErrorList, *args, **kwargs)
+
+    email = forms.CharField(label=cn_key._email, required=False, max_length=75)
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email:
+            email = email.strip()
+            if not check_email(email):
+                raise forms.ValidationError(cn_key._email_error)
+        return email
+
     class Meta:
         model = User
         fields = ('nick_name', 'gender', 'avatar', 'location', 'email', )
@@ -18,6 +32,42 @@ class UserAccountForm(forms.ModelForm):
             'avatar': forms.FileInput()
         }
 
+
+class ChangePasswordForm(forms.Form):
+    old_password = forms.CharField(label=cn_key._old_password,
+                                   widget=forms.PasswordInput, required=False)
+    new_password = forms.CharField(label=cn_key._new_password,
+                                   widget=forms.PasswordInput, required=False)
+    repeat_password = forms.CharField(label=cn_key._password_repeat,
+                                      widget=forms.PasswordInput, required=False)
+
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super(ChangePasswordForm, self).__init__(error_class=ErrorList, *args, **kwargs)
+
+    def clean_old_password(self):
+        old_password = self.cleaned_data.get('old_password')
+        if not self.user.check_password(old_password):
+            raise forms.ValidationError(cn_key._old_password_wrong)
+        return old_password
+
+    def clean_new_password(self):
+        new_password = self.cleaned_data.get('new_password')
+        if new_password:
+            if len(new_password) < 6:
+                raise forms.ValidationError(cn_key._password_length_limit)
+            return new_password
+        else:
+            raise forms.ValidationError(cn_key._password_required)
+
+    def clean_password_repeat(self):
+        new_password = self.cleaned_data.get('new_password')
+        repeat_password = self.cleaned_data.get('repeat_password')
+        if new_password and repeat_password and new_password != repeat_password:
+            raise forms.ValidationError(cn_key._password_not_match)
+        return repeat_password
+
+
 class UserRegisterForm(forms.Form):
     email = forms.CharField(label=cn_key._email, required=False, max_length=75)
     password = forms.CharField(label=cn_key._password,
@@ -25,12 +75,15 @@ class UserRegisterForm(forms.Form):
     password_repeat = forms.CharField(label=cn_key._password_repeat,
                                       widget=forms.PasswordInput, required=False)
 
+    def __init__(self, *args, **kwargs):
+        super(UserRegisterForm, self).__init__(error_class=ErrorList, *args, **kwargs)
+
     def clean_password_repeat(self):
         password = self.cleaned_data.get('password')
         password_repeat = self.cleaned_data.get('password_repeat')
-        if password and password_repeat and password.strip() != password_repeat.strip():
+        if password and password_repeat and password != password_repeat:
             raise forms.ValidationError(cn_key._password_not_match)
-        return password_repeat.strip()
+        return password_repeat
 
     def clean_password(self):
         password = self.cleaned_data.get('password')
@@ -72,17 +125,17 @@ class UserCreationForm(forms.ModelForm):
         'password_mismatch': "The two password fields didn't match.",
     }
     uid = forms.RegexField(label=_("uid"), max_length=30,
-        regex=r'^[\w.@+-]+$',
-        help_text=_("Required. 30 characters or fewer. Letters, digits and "
-                      "@/./+/-/_ only."),
-        error_messages={
-            'invalid': _("This value may contain only letters, numbers and "
-                         "@/./+/-/_ characters.")})
+                           regex=r'^[\w.@+-]+$',
+                           help_text=_("Required. 30 characters or fewer. Letters, digits and "
+                                       "@/./+/-/_ only."),
+                           error_messages={
+                               'invalid': _("This value may contain only letters, numbers and "
+                                            "@/./+/-/_ characters.")})
     password1 = forms.CharField(label=_("Password"),
-        widget=forms.PasswordInput)
+                                widget=forms.PasswordInput)
     password2 = forms.CharField(label=_("Password confirmation"),
-        widget=forms.PasswordInput,
-        help_text=_("Enter the same password as above, for verification."))
+                                widget=forms.PasswordInput,
+                                help_text=_("Enter the same password as above, for verification."))
 
     class Meta:
         model = User
@@ -118,14 +171,14 @@ class UserChangeForm(forms.ModelForm):
     uid = forms.RegexField(
         label=_("uid"), max_length=30, regex=r"^[\w.@+-]+$",
         help_text=_("Required. 30 characters or fewer. Letters, digits and "
-                      "@/./+/-/_ only."),
+                    "@/./+/-/_ only."),
         error_messages={
             'invalid': _("This value may contain only letters, numbers and "
                          "@/./+/-/_ characters.")})
     password = ReadOnlyPasswordHashField(label=_("Password"),
-        help_text=_("Raw passwords are not stored, so there is no way to see "
-                    "this user's password, but you can change the password "
-                    "using <a href=\"password/\">this form</a>."))
+                                         help_text=_("Raw passwords are not stored, so there is no way to see "
+                                                     "this user's password, but you can change the password "
+                                                     "using <a href=\"password/\">this form</a>."))
 
     class Meta:
         model = User
@@ -141,6 +194,7 @@ class UserChangeForm(forms.ModelForm):
         # This is done here, rather than on the field, because the
         # field does not have access to the initial value
         return self.initial["password"]
+
 
 class AdminPasswordChangeForm(forms.Form):
     """

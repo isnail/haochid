@@ -26,6 +26,7 @@ urlpatterns = patterns('',
                        url(r'^register/?', 'user.views.register', name='register'),
                        url(r'^logout/?', 'user.views.logout', name='logout'),
                        url(r'^account/?', 'user.views.account', name='account'),
+                       url(r'^password/?', 'user.views.change_password', name='change_password'),
 
                        url(r'^categories/?', 'product.views.categories', name='categories'),
                        url(r'^category/(?P<id>\d+)/?', 'product.views.category', name='category'),
