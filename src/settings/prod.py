@@ -16,3 +16,10 @@ DATABASES = {
         'PORT': sae.const.MYSQL_PORT,
     }
 }
+
+access_id = 'NtKMKCiLAiK8OlpV'
+secret_access_key = 'Y6DEQhEhzgRzOJES5HdQZUFFj0rRsM'
+oss_host = 'oss.aliyuncs.com'
+bucket = 'haochid'
+
+MEDIA_URL = 'http://images.haochid.com/'

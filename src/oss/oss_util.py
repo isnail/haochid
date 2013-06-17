@@ -50,7 +50,7 @@ def initlog(log_level = LOG_LEVEL):
         logger.setLevel(logging.ERROR)
     return logger
 
-log = initlog(LOG_LEVEL)
+# log = initlog(LOG_LEVEL)
 
 ########## function for Authorization ##########
 def _format_header(headers = None):
@@ -85,7 +85,7 @@ def get_assign(secret_access_key, method, headers = None, resource="/", result =
     content_type = ""
     date = ""
     canonicalized_oss_headers = ""
-    log.debug("secret_access_key: %s" % secret_access_key)
+    # log.debug("secret_access_key: %s" % secret_access_key)
     content_md5 = safe_get_element('Content-MD5', headers)
     content_type = safe_get_element('Content-Type', headers)
     date = safe_get_element('Date', headers)
@@ -99,8 +99,8 @@ def get_assign(secret_access_key, method, headers = None, resource="/", result =
                 canonicalized_oss_headers += k + ":" + tmp_headers[k] + "\n"
     string_to_sign = method + "\n" + content_md5.strip() + "\n" + content_type + "\n" + date + "\n" + canonicalized_oss_headers + canonicalized_resource;
     result.append(string_to_sign)
-    log.debug("\nmethod:%s\n content_md5:%s\n content_type:%s\n data:%s\n canonicalized_oss_headers:%s\n canonicalized_resource:%s\n" % (method, content_md5, content_type, date, canonicalized_oss_headers, canonicalized_resource))
-    log.debug("\nstring_to_sign:%s\n \nstring_to_sign_size:%d\n" % (string_to_sign, len(string_to_sign)))
+    # log.debug("\nmethod:%s\n content_md5:%s\n content_type:%s\n data:%s\n canonicalized_oss_headers:%s\n canonicalized_resource:%s\n" % (method, content_md5, content_type, date, canonicalized_oss_headers, canonicalized_resource))
+    # log.debug("\nstring_to_sign:%s\n \nstring_to_sign_size:%d\n" % (string_to_sign, len(string_to_sign)))
     h = hmac.new(secret_access_key, string_to_sign, sha)
     return base64.encodestring(h.digest()).strip()
 
@@ -620,18 +620,19 @@ class UploadPartWorker(Thread):
                             break
                         res = self.oss.upload_part_from_file_given_pos(bucket, object, self.file_path, offset, partsize, self.upload_id, part_number)
                         if res.status != 200:
-                            log.warn("Upload %s/%s from %s, failed! ret is:%s." %(bucket, object, self.file_path, res.status))
-                            log.warn("headers:%s" % res.getheaders())
+                            # log.warn("Upload %s/%s from %s, failed! ret is:%s." %(bucket, object, self.file_path, res.status))
+                            # log.warn("headers:%s" % res.getheaders())
                             retry_times = retry_times - 1
                             time.sleep(1)
                         else:
-                            log.info("Upload %s/%s from %s, OK! ret is:%s." % (bucket, object, self.file_path, res.status))
+                            # log.info("Upload %s/%s from %s, OK! ret is:%s." % (bucket, object, self.file_path, res.status))
                             break
                     except:
                         retry_times = retry_times - 1
                         time.sleep(1)
             else:
-                log.error("ERROR! part %s is not as expected!" % part)
+                pass
+                # log.error("ERROR! part %s is not as expected!" % part)
 
 class MultiGetWorker(Thread):
     def __init__(self, oss, bucket, object, file, start, end, retry_times=5):
