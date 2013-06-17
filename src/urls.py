@@ -38,6 +38,8 @@ urlpatterns = patterns('',
                        url(r'^hot-list/((?P<page>\d+)/?)?', 'product.views.hot', name='hot'),
                        url(r'^new/?$', 'product.views.new_index', name='new_index'),
                        url(r'^new-list/((?P<page>\d+)/?)?', 'product.views.new', name='new'),
+                       url(r'^recommend/?$', 'product.views.recommend_index', name='recommend_index'),
+                       url(r'^recommend-list/((?P<page>\d+)/?)?', 'product.views.recommend', name='recommend'),
 
                        url(r'^vote/(?P<product_id>\d+)/((?P<vote>\w)/?)?', 'product.views.vote', name='vote'),
 

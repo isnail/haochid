@@ -23,7 +23,7 @@ cache_timeout = 36 * 3600
 
 def index(req):
     ctx = {}
-    recommend = models.DailyRecommended.objects.all().order_by('-date')[:3]
+    recommend = models.DailyRecommended.objects.all()[:3]
     ctx['recommend'] = [_product_to_dict(r.product, req.user) for r in recommend]
     return render(req, ctx, 'index.html')
 
@@ -180,6 +180,34 @@ def hot_index(req):
     ctx['title'] = cn_key._hot
     return render(req, ctx, 'product/list.html')
 
+
+def recommed_product_to_dict(recommend, user):
+    d = _product_to_dict(recommend.product, user)
+    d['date'] = str(recommend.date)
+    d['reason'] = recommend.reason
+    return d
+
+
+def recommend(req, page=1):
+    count = req.GET.get('count', default_count)
+    try:
+        count = int(count)
+        if count < 1:
+            count = default_count
+    except:
+        count = default_count
+    products = models.DailyRecommended.objects.filter(product__status='A')
+    p, qs = paginator(products, count, page)
+    result = {'products': [recommed_product_to_dict(q, req.user) for q in qs]}
+    return JsonResponse({'status': 1, 'data': result, 'hasNext': qs.has_next()})
+
+
+def recommend_index(req):
+    ctx = {}
+    ctx['name'] = cn_key._recommend
+    ctx['title'] = cn_key._recommend
+    ctx['page_name'] = 'recommend'
+    return render(req, ctx, 'product/list.html')
 
 
 def product_info(req, id):

@@ -1,9 +1,6 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 {% block head_wrap %}
-<script type="text/javascript" src="{% static 'js/carousel.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/slider.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/tile-slider.js' %}"></script>
 <script type="text/javascript">
     var hasNext = true;
     var page = 1;
@@ -12,6 +9,7 @@
             hasNext = false;
             var url = {% if page_name == 'new' %}'{% url "product.views.new" %}'+page{% endif %}
                       {% if page_name == 'hot' %}'{% url "product.views.hot" %}'+page{% endif %}
+                      {% if page_name == 'recommend' %}'{% url "product.views.recommend" %}'+page{% endif %}
                       {% if page_name == 'category' %}'{% url "product.views.category_products" %}'+'?c={{ id }}&p='+page{% endif %};
             $.getJSON(url, function(result){
                if(result && result.status == 1){

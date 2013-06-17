@@ -67,24 +67,26 @@
             <span class="pull-menu"></span>
             <a href="/">
                 <span class="element brand">
-                    <img class="place-left" src="{% static 'images/logo32.png' %}" style="height: 20px"/>
+                    <img class="place-left" src="{% static 'images/logo.png' %}" style="height: 20px"/>
                     好吃的
                 </span>
             </a>
             <div class="divider"></div>
             <ul class="menu">
                 <li><a href="{% url 'product.views.index' %}">首页</a></li>
-                <li><a href="/">每日推荐</a></li>
+                <li><a href="{% url 'product.views.recommend_index' %}">每日推荐</a></li>
                 <li><a href="{% url 'product.views.hot_index' %}">热门</a></li>
                 <li><a href="{% url 'product.views.new_index' %}">新货</a></li>
             </ul>
             <div class="fg-color-white" style="height: 30px; float: right;">
                 {% if user|isinst:"user.models.User" %}
-
-                    <a href="{% url 'user.views.account' %}"><span class="fg-color-white" style="line-height: 30px; font-weight: 900;">欢迎您, {{ user.name }}</span></a>
                     {% if user.avatar %}
-                        <img width="30" height="30" style="border-radius: 3px;" src="{{ user.avatar }}" />
+                        <a href="{% url 'user.views.account' %}">
+                            <img width="30" height="30" style="border-radius: 10px;" src="{{ user.avatar }}" />
+                        </a>
                     {% endif %}
+                    <a href="{% url 'user.views.account' %}"><span class="fg-color-white" style="line-height: 30px; font-weight: 900;">欢迎您, {{ user.name }}</span></a> |
+                    <a href="{% url 'user.views.logout' %}"><span class="fg-color-white" style="line-height: 30px; font-weight: 900;">退出</span></a>
                 {% else %}
                     <a class="fg-color-white" style="line-height: 30px;" href="{% url 'django.contrib.auth.views.login' %}">登录</a> |
                     <a class="fg-color-white" style="line-height: 30px;" href="{% url 'user.views.register' %}">注册</a>
