@@ -36,6 +36,9 @@
                         </div>
                     </div>
                     <div class="span4">
+                        <h1 style="word-wrap: break-word;">
+                            {{ product.title }}
+                        </h1>
                         <p>
                             分类：
                             {% for c in product.category.all %}
@@ -45,12 +48,14 @@
                         <p style="word-wrap: break-word;">{{ product.content }}</p>
                         <p class="bg-color-red fg-color-white padding5">扫描二维码，发送给朋友</p>
                         <img src="{% url 'product.views.qr' %}?url={% url 'product.views.product' product.id %}">
+                        {% if product.tag.count > 0 %}
                         <div class="padding5 bg-color-pink fg-color-white">
                             <div class="padding5">这里去吃↓</div>
                             <div id="map" style="height: 300px;">
 
                             </div>
                         </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -59,18 +64,18 @@
 </div>
 {% endblock %}
 {% block script_wrap %}
-{#<script type="text/javascript" src="http://api.map.baidu.com/api?v=1.5&ak=6a67875e40f6b41443e2a34157342d0d"></script>#}
+{% if product.tag.count > 0 %}
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=1.5&ak=6a67875e40f6b41443e2a34157342d0d"></script>
 <script type="text/javascript">
-/*
     var map = new BMap.Map("map");
     var point = new BMap.Point({{ map.content.point.y }}, {{ map.content.point.x }});
     map.centerAndZoom(point,15);
-    var myKeys = ["酒店", "加油站"];
+    var myKeys = [{% for t in product.tag.all %}"{{ t.name }}"{% endfor %}];
     var local = new BMap.LocalSearch(map, {
       renderOptions:{map: map}
     });
     local.setPageCapacity(15);
     local.searchInBounds(myKeys, map.getBounds());
-    */
 </script>
+{% endif %}
 {% endblock %}
