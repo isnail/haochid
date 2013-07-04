@@ -23,3 +23,20 @@ oss_host = 'oss.aliyuncs.com'
 bucket = 'haochid'
 
 MEDIA_URL = 'http://images.haochid.com/'
+
+ALLOWED_HOSTS = [
+    'haochid.com',
+    'haochid.sinaapp.com',
+    'www.haochid.com'
+]
+
+ADMINS = ( ('iSnail', 'me@isnail.info'), )
+MANAGERS = ADMINS
+
+EMAIL_HOST = 'smtp.qq.com'
+EMAIL_PORT = '25'
+EMAIL_HOST_USER = '18980692055@qq.com'
+SERVER_EMAIL = 'service@haochid.com'
+EMAIL_HOST_PASSWORD = 'see007'
+EMAIL_SUBJECT_PREFIX = '[haochid] '
+EMAIL_ADDRESS = SERVER_EMAIL

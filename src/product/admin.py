@@ -1,5 +1,5 @@
 __author__ = 'biyanbing'
-import logging
+import logging, uuid
 
 from django.contrib import admin
 from django import forms
@@ -114,6 +114,8 @@ class ProductAdmin(admin.ModelAdmin):
 
 
     def save_model(self, request, obj, form, change):
+        if obj.cover:
+            obj.cover = None
         obj.save()
         cover = request.FILES.get('cover')
         if cover:
