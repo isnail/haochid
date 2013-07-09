@@ -20,3 +20,53 @@ STATIC_ROOT = '%s' % rel_path('../static')
 
 DATE_FORMAT = 'Y-m-d'
 DATETIME_FORMAT = 'Y-m-d H:i:s'
+
+
+ALLOWED_HOSTS = ['hao.com']
+BACKEND_LOG_FILE = 'django.log'
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s: %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+            },
+        'simple': {
+            'format': '%(levelname)s: %(message)s'
+            },
+        },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+            }
+        },
+    'handlers': {
+        'console':{
+            'level':'DEBUG',
+            'class':'logging.StreamHandler',
+            'formatter': 'simple'
+            },
+        'file':{
+            'level':'ERROR',
+            'class':'logging.FileHandler',
+            'filename': BACKEND_LOG_FILE,
+            'formatter': 'verbose'
+            },
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+            }
+        },
+    'loggers': {
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+            },
+        'meme.bg': {
+            'handlers': ['file', 'mail_admins'],
+            'level': 'INFO',
+            },
+        }
+    }

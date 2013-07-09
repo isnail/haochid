@@ -54,11 +54,13 @@ class OssAPI:
     def set_retry_times(self, retry_times=5):
         self.retry_times = retry_times
 
-    def get_connection(self):
+    def get_connection(self, tmp_host=""):
         host = ''
         port = 80
         timeout = 10
-        host_port_list = self.host.split(":")
+        if len(tmp_host) == 0:
+            tmp_host = self.host
+        host_port_list = tmp_host.split(":")
         if len(host_port_list) == 1:
             host = host_port_list[0].strip()
         elif len(host_port_list) == 2:
@@ -237,7 +239,7 @@ class OssAPI:
         date = time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime())
         headers['Date'] = date
         headers['Authorization'] = self._create_sign_for_normal_auth(method, headers, resource)
-        conn = self.get_connection()
+        conn = self.get_connection(headers['Host'])
         conn.request(method, url, body, headers)
         return conn.getresponse()
 
@@ -274,6 +276,18 @@ class OssAPI:
         body = ''
         params = {}
         params['acl'] = ''
+        return self.http_request(method, bucket, object, headers, body, params)
+
+    def get_bucket_location(self, bucket):
+        '''
+        Get Location of bucket
+        '''
+        method = 'GET'
+        object = ''
+        headers = {}
+        body = ''
+        params = {}
+        params['location'] = ''
         return self.http_request(method, bucket, object, headers, body, params)
 
     def get_bucket(self, bucket, prefix='', marker='', delimiter='', maxkeys='', headers=None):
@@ -368,6 +382,8 @@ class OssAPI:
         Returns:
             HTTP Response
         '''
+        if not headers:
+            headers = {}
         if acl != '':
             if "AWS" == self.provider:
                 headers['x-amz-acl'] = acl
@@ -488,7 +504,7 @@ class OssAPI:
         url = append_param(url, params)
         date = time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime())
 
-        conn = self.get_connection()
+        conn = self.get_connection(headers['Host'])
         conn.putrequest(method, url)
         if isinstance(content_type, unicode):
             content_type = content_type.encode('utf-8')
@@ -1006,7 +1022,7 @@ class OssAPI:
         '''
         #get init upload_id
         if len(upload_id) == 0:
-            res = self.init_multi_upload(bucket, object)
+            res = self.init_multi_upload(bucket, object, headers, params)
             body = res.read()
             if res.status == 200:
                 h = GetInitUploadIdXml(body)
@@ -1016,7 +1032,6 @@ class OssAPI:
                 raise Exception("%s, %s" %(res.status, err.msg))
         if len(upload_id) == 0:
             raise Exception("-1, Cannot get upload id.")
-        print "upload_id is: %s" % upload_id
         #split the large file into 1000 parts or many parts
         #get part_msg_list
         if isinstance(filename, unicode):
@@ -1055,7 +1070,7 @@ class OssAPI:
                 except:
                     retry_times -= 1
             if -1 >= retry_times:
-                raise Exception("-2, after retry %s, failed, multi upload part failed!" % retry_times)
+                raise Exception("-2, after retry %s, failed, multi upload part failed! upload_id:%s" % (retry_times, upload_id))
             #get xml string that contains msg of part
             part_msg_xml = create_part_xml(part_msg_list)
             #complete upload
@@ -1064,7 +1079,7 @@ class OssAPI:
                 break
             upload_retry_times -= 1
         if upload_retry_times < 0:
-            raise Exception("-3, after retry %s, failed, multi upload file failed!" % upload_retry_times)
+            raise Exception("-3, after retry %s, failed, multi upload file failed! upload_id:%s" % (upload_retry_times, upload_id))
         return res
 
     def delete_objects(self, bucket, object_list=None, headers=None, params=None):

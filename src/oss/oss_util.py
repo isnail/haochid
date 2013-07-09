@@ -22,16 +22,9 @@ if "AWS" == PROVIDER:
 
 def initlog(log_level = LOG_LEVEL):
     import logging
-    from logging.handlers import RotatingFileHandler
-    LOGFILE = os.path.join(os.getcwd(), 'log.txt')
-    MAXLOGSIZE = 100*1024*1024 #Bytes
-    BACKUPCOUNT = 5
     FORMAT = \
     "%(asctime)s %(levelname)-8s[%(filename)s:%(lineno)d(%(funcName)s)] %(message)s"
-    hdlr = RotatingFileHandler(LOGFILE,
-                                  mode='a',
-                                  maxBytes=MAXLOGSIZE,
-                                  backupCount=BACKUPCOUNT)
+    hdlr = logging.Handler()
     formatter = logging.Formatter(FORMAT)
     hdlr.setFormatter(formatter)
     logger = logging.getLogger("oss")
@@ -50,7 +43,8 @@ def initlog(log_level = LOG_LEVEL):
         logger.setLevel(logging.ERROR)
     return logger
 
-# log = initlog(LOG_LEVEL)
+log = initlog(LOG_LEVEL)
+
 
 ########## function for Authorization ##########
 def _format_header(headers = None):
@@ -85,7 +79,7 @@ def get_assign(secret_access_key, method, headers = None, resource="/", result =
     content_type = ""
     date = ""
     canonicalized_oss_headers = ""
-    # log.debug("secret_access_key: %s" % secret_access_key)
+    log.debug("secret_access_key: %s" % secret_access_key)
     content_md5 = safe_get_element('Content-MD5', headers)
     content_type = safe_get_element('Content-Type', headers)
     date = safe_get_element('Date', headers)
@@ -99,8 +93,8 @@ def get_assign(secret_access_key, method, headers = None, resource="/", result =
                 canonicalized_oss_headers += k + ":" + tmp_headers[k] + "\n"
     string_to_sign = method + "\n" + content_md5.strip() + "\n" + content_type + "\n" + date + "\n" + canonicalized_oss_headers + canonicalized_resource;
     result.append(string_to_sign)
-    # log.debug("\nmethod:%s\n content_md5:%s\n content_type:%s\n data:%s\n canonicalized_oss_headers:%s\n canonicalized_resource:%s\n" % (method, content_md5, content_type, date, canonicalized_oss_headers, canonicalized_resource))
-    # log.debug("\nstring_to_sign:%s\n \nstring_to_sign_size:%d\n" % (string_to_sign, len(string_to_sign)))
+    log.debug("\nmethod:%s\n content_md5:%s\n content_type:%s\n data:%s\n canonicalized_oss_headers:%s\n canonicalized_resource:%s\n" % (method, content_md5, content_type, date, canonicalized_oss_headers, canonicalized_resource))
+    log.debug("\nstring_to_sign:%s\n \nstring_to_sign_size:%d\n" % (string_to_sign, len(string_to_sign)))
     h = hmac.new(secret_access_key, string_to_sign, sha)
     return base64.encodestring(h.digest()).strip()
 
@@ -115,7 +109,7 @@ def get_resource(params = None):
     override_response_list = ['response-content-type', 'response-content-language', \
                               'response-cache-control', 'logging', 'response-content-encoding', \
                               'acl', 'uploadId', 'uploads', 'partNumber', 'group', \
-                              'delete', 'website',\
+                              'delete', 'website', 'location',\
                               'response-expires', 'response-content-disposition']
     override_response_list.sort()
     resource = ""
@@ -125,9 +119,10 @@ def get_resource(params = None):
         if tmp_headers.has_key(i.lower()):
             resource += separator
             resource += i
-            if len(tmp_headers[i.lower()]) != 0:
+            tmp_key = str(tmp_headers[i.lower()])
+            if len(tmp_key) != 0:
                 resource += "="
-                resource += tmp_headers[i.lower()]
+                resource += tmp_key 
             separator = '&'
     return resource
 
@@ -287,7 +282,7 @@ def clear_all_objects_in_bucket(oss_instance, bucket):
 
     res = oss_instance.delete_bucket(bucket)
     if (res.status / 100 != 2 and res.status != 404):
-        print "clear_all_objects_in_bucket: delete bucket fail, ret is:", res.status
+        print "clear_all_objects_in_bucket: delete bucket fail, ret is: %s, request id is:%s" % (res.status, res.getheader("x-oss-request-id"))
         return False
     return True
 
@@ -361,6 +356,34 @@ class GetAllObjects:
 
             if len(marker) == 0:
                 break
+def get_all_buckets(oss):
+    bucket_list = []
+    res = oss.get_service()
+    if res.status == 200:
+        h = GetServiceXml(res.read())
+        for b in h.bucket_list:
+            bucket_list.append(str(b.name).strip())
+    return bucket_list 
+
+def get_object_list_marker_from_xml(body):
+    #return ([(object_name, object_length, last_modify_time)...], marker)
+    object_meta_list = []
+    next_marker = ""
+    hh = GetBucketXml(body)
+    (fl, pl) = hh.list()
+    if len(fl) != 0:
+        for i in fl:
+            if isinstance(i[0], unicode):
+                object = i[0].encode('utf-8')
+            else:
+                object = i[0]
+            last_modify_time = i[1]
+            length = i[3]
+            etag = i[2]
+            object_meta_list.append((object, length, last_modify_time, etag))
+    if hh.is_truncated:
+        next_marker = hh.nextmarker
+    return (object_meta_list, next_marker)
 
 def get_upload_id(oss, bucket, object, headers = None):
     '''
@@ -620,19 +643,18 @@ class UploadPartWorker(Thread):
                             break
                         res = self.oss.upload_part_from_file_given_pos(bucket, object, self.file_path, offset, partsize, self.upload_id, part_number)
                         if res.status != 200:
-                            # log.warn("Upload %s/%s from %s, failed! ret is:%s." %(bucket, object, self.file_path, res.status))
-                            # log.warn("headers:%s" % res.getheaders())
+                            log.warn("Upload %s/%s from %s, failed! ret is:%s." %(bucket, object, self.file_path, res.status))
+                            log.warn("headers:%s" % res.getheaders())
                             retry_times = retry_times - 1
                             time.sleep(1)
                         else:
-                            # log.info("Upload %s/%s from %s, OK! ret is:%s." % (bucket, object, self.file_path, res.status))
+                            log.info("Upload %s/%s from %s, OK! ret is:%s." % (bucket, object, self.file_path, res.status))
                             break
                     except:
                         retry_times = retry_times - 1
                         time.sleep(1)
             else:
-                pass
-                # log.error("ERROR! part %s is not as expected!" % part)
+                log.error("ERROR! part %s is not as expected!" % part)
 
 class MultiGetWorker(Thread):
     def __init__(self, oss, bucket, object, file, start, end, retry_times=5):
@@ -657,23 +679,27 @@ class MultiGetWorker(Thread):
             headers = {}
             self.file.seek(self.startpos)
             headers['Range'] = 'bytes=%d-%d' % (self.startpos, self.endpos)
-            res = self.oss.object_operation("GET", self.bucket, self.object, headers)
-            if res.status == 206:
-                while self.need_read < self.length:
-                    left_len = self.length - self.need_read
-                    if left_len > self.get_buffer_size:
-                        content = res.read(self.get_buffer_size)
-                    else:
-                        content = res.read(left_len)
-                    if content:
-                        self.need_read += len(content)
-                        self.file.write(content)
-                    else:
-                        break
-                break
+            try:
+                res = self.oss.object_operation("GET", self.bucket, self.object, headers)
+                if res.status == 206:
+                    while self.need_read < self.length:
+                        left_len = self.length - self.need_read
+                        if left_len > self.get_buffer_size:
+                            content = res.read(self.get_buffer_size)
+                        else:
+                            content = res.read(left_len)
+                        if content:
+                            self.need_read += len(content)
+                            self.file.write(content)
+                        else:
+                            break
+                    break
+            except:
+                pass
             retry_times += 1
             if retry_times > self.retry_times:
-                break
+                print "ERROR, reach max retry times:%s when multi get /%s/%s" % (self.retry_times, self.bucket, self.object)
+                break 
 
         self.file.flush()
         self.file.close()
@@ -1031,6 +1057,8 @@ def is_ip(s):
     try:
         tmp_list = s.split(':')
         s = tmp_list[0]
+        if s == 'localhost':
+            return True
         tmp_list = s.split('.')
         if len(tmp_list) != 4:
             return False

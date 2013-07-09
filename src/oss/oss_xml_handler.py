@@ -185,6 +185,14 @@ class GetBucketAclXml:
     def show(self):
         print "Owner Name: %s\nOwner ID: %s\nGrant: %s" % (self.owner.id, self.owner.display_name, self.grant)
  
+class GetBucketLocationXml:
+    def __init__(self, xml_string):
+        self.xml = minidom.parseString(xml_string)
+        self.location = get_tag_text(self.xml, 'LocationConstraint')
+    
+    def show(self):
+        print "LocationConstraint: %s" % (self.location)
+
 class GetInitUploadIdXml:
     def __init__(self, xml_string):
         self.xml = minidom.parseString(xml_string)
