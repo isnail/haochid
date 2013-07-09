@@ -52,6 +52,20 @@ _hot = u'热门'
 _hot_product = '%s%s' % (_hot, _product)
 _new = u'新货'
 _no_say = u'不想说'
+_user_friend_ship = u'好友关系'
+_user_friend = u'好友'
+_owner = u'拥有者'
+_members = u'成员'
+_max_member_count = u'人数上限'
+_level = u'等级'
+_x_coordinate = u'X坐标'
+_y_coordinate = u'Y坐标'
+_description = u'描述'
+_lbs_group = u'LBS群'
+_message = u'消息'
+_type = u'类型'
+_is_read = u'已读'
+_is_deleted = u'已删除'
 
 """
 status

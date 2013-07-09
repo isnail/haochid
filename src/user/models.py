@@ -87,4 +87,47 @@ class User(AbstractBaseUser, PermissionsMixin, UserPlat):
         swappable = 'AUTH_USER_MODEL'
 
 
+class UserFriendShip(models.Model):
+    user = models.ForeignKey(User, verbose_name=cn_key._user)
+    friends = models.ManyToManyField(User, verbose_name=cn_key._user_friend)
 
+    class Meta:
+        verbose_name = cn_key._user_friend_ship
+        verbose_name_plural = cn_key._user_friend_ship
+
+
+class LBSGroup(models.Model):
+    owner = models.ForeignKey(User, verbose_name=cn_key._owner)
+    members = models.ManyToManyField(User, verbose_name=cn_key._members)
+    name = models.CharField(cn_key._name, max_length=16)
+    max_member_count = models.PositiveIntegerField(cn_key._max_member_count, default=200)
+    level = models.PositiveSmallIntegerField(cn_key._level, default=1)
+    location = models.CharField(cn_key._location, max_length=255)
+    x_coordinate = models.CharField(cn_key, max_length=32)
+    y_coordinate = models.CharField(cn_key, max_length=32)
+    description = models.CharField(cn_key._description, max_length=255, null=True, blank=True)
+
+    class Meta:
+        verbose_name = cn_key._lbs_group
+        verbose_name_plural = cn_key._lbs_group
+
+
+MESSAGE_CHOICES = (
+    ('F', 'Friend', ),
+    ('G', 'Group', ),
+    ('S', 'System', ),
+)
+
+class Message(models.Model):
+    user = models.ForeignKey(User, verbose_name=cn_key._user)
+    content = models.CharField(cn_key._content, max_length=255)
+    type = models.CharField(cn_key._type, max_length=1, choices=MESSAGE_CHOICES)
+    to_group = models.ForeignKey(LBSGroup, verbose_name=cn_key._lbs_group, null=True, blank=True)
+    to_user = models.ForeignKey(User, verbose_name=cn_key._user_friend, null=True, blank=True)
+    is_read = models.BooleanField(cn_key._is_read, default=False)
+    is_deleted = models.BooleanField(cn_key._is_deleted, default=False)
+    created_time = models.DateTimeField(cn_key._created_time, auto_now_add=True)
+
+    class Meta:
+        verbose_name = cn_key._message
+        verbose_name_plural = cn_key._message
