@@ -1,7 +1,7 @@
 __author__ = 'biyanbing'
 
 
-from django.contrib.auth import authenticate, login as system_login, logout
+from django.contrib.auth import authenticate, login as system_login, logout as system_logout
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect
 from django.contrib.auth.forms import AuthenticationForm
@@ -36,7 +36,7 @@ def register(req):
     return render(req, context, 'registration/register.html')
 
 def logout(req):
-    logout(req)
+    system_logout(req)
     if hasattr(req, 'user'):
         req.user = None
     return redirect(settings.LOGIN_REDIRECT_URL)

@@ -32,7 +32,13 @@ def create_default_plat(app, created_models, verbosity, db, **kwargs):
         cursor = connections[db].cursor()
         for command in sequence_sql:
             cursor.execute(command)
-    Plat(pk=4, name='o', app_key='', app_secret='').save(using=db)
+    Plat(pk=4, name='q', app_key='801167659', app_secret='db437510eb1ccf454f820a06d32d4cf9').save(using=db)
+    sequence_sql = connections[db].ops.sequence_reset_sql(no_style(), [Plat])
+    if sequence_sql:
+        cursor = connections[db].cursor()
+        for command in sequence_sql:
+            cursor.execute(command)
+    Plat(pk=5, name='o', app_key='', app_secret='').save(using=db)
     sequence_sql = connections[db].ops.sequence_reset_sql(no_style(), [Plat])
     if sequence_sql:
         cursor = connections[db].cursor()

@@ -46,7 +46,7 @@ urlpatterns = patterns('',
 
                        url(r'^qr/?', 'product.views.qr', name='qr'),
 
-                       url(r'^callback/(?P<plat>(s|t))/?', 'main.views.callback', name='callback'),
+                       url(r'^callback/(?P<plat>(s|t|q))/?', 'main.views.callback', name='callback'),
 
                        url(r'^comment/(?P<product_id>\d+)/?', 'comment.views.comment_list', name='comment_list'),
                        url(r'^comment/add/?', 'comment.views.comment_add', name='comment_add'),

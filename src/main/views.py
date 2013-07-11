@@ -16,7 +16,7 @@ default_password = 'SDf32sdf'
 
 
 def callback(req, plat):
-    if plat not in ('s', 't'):
+    if plat not in ('s', 't', 'q'):
         raise Http404
     code = req.GET.get('code')
     if plat == 's':
@@ -42,7 +42,7 @@ def callback(req, plat):
         user = authenticate(username=uid, password=default_password)
         system_login(req, user)
         return HttpResponseRedirect(settings.LOGIN_REDIRECT_URL)
-    else:
+    elif plat == 't':
         open_id = req.GET.get('openid')
         open_key = req.GET.get('openkey')
         plat = Plat.objects.get(name=plat)
@@ -54,4 +54,6 @@ def callback(req, plat):
         u = client.user.info.get()
         print u
         return HttpResponse(u)
+    else:
+        open_id = req.GET.get('openid')
 

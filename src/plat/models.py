@@ -7,6 +7,7 @@ plat_choices = (
     ('t', cn_key._tencent),
     ('s', cn_key._sina),
     ('l', cn_key._local),
+    ('q', 'QQ'),
     ('o', cn_key._other),
 )
 

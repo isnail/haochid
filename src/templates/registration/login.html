@@ -42,10 +42,17 @@
                                         <i class="icon-enter"></i>
                                     </button>
                                 </form>
+                                <div>
                                 <button class="image-button bg-color-green fg-color-white" onclick="window.location = 'https://api.weibo.com/oauth2/authorize?client_id=421659899&response_type=code&redirect_uri=http://haochid.com/callback/s';">
                                     新浪微博
                                     <img src="{% static 'images/sina.png' %}">
                                 </button>
+                                <button class="image-button bg-color-red fg-color-white" onclick="window.location ='https://graph.qq.com/oauth2.0/authorize?response_type=code&client_id=801167659&state=jhasDQdas342asdSDT4564&redirect_uri=http://www.haochid.com/callback/q'">
+                                    QQ
+                                    <img src="{% static 'images/qq.png' %}">
+                                </button>
+                                </div>
+                                <div>
                                 <button class="image-button bg-color-red fg-color-white" onclick="window.location ='https://open.t.qq.com/cgi-bin/oauth2/authorize?client_id=801167659&response_type=code&redirect_uri=http://haochid.com/callback/t'">
                                     腾讯微博
                                     <img src="{% static 'images/tencent.png' %}">
@@ -53,6 +60,7 @@
                                 <button class="bg-color-greenDark fg-color-white" onclick="window.location='{% url "user.views.register" %}'">
                                     注册
                                 </button>
+                                </div>
                             </div>
 
                         </div>
